@@ -1,1 +1,0 @@
-C:\Users\ntail\OneDrive\Documents\demo\MauiApp_version\MauiApp_version\MauiApp_version.csproj;x64
