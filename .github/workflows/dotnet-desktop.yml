@@ -35,10 +35,10 @@ jobs:
     
     - name: Decrypt PFX File 
       run: 
-       echo "${{ secrets.WINDOWS_PFX_FILE }}" › MauiApp_version/MeTooSoftware.pfx.asc
-       certutil -decode MauiApp_version/MeTooSoftware.pfx.asc MauiApp_version/MeTooSoftware.pfx
+       echo "${{ secrets.WINDOWS_PFX_FILE }}" › MauiApp_version/MauiApp_version/MeTooSoftware.pfx.asc
+       certutil -decode MauiApp_version/MauiApp_version/MeTooSoftware.pfx.asc MauiApp_version/MauiApp_version/MeTooSoftware.pfx
     - name: Add Cert to Store
-      run: certutil -user -q -p ${{ secrets.WINDOWS_PFX_PASSWORD }} -importpfx MauiApp_version/MeTooSoftware.pfx NoRoot
+      run: certutil -user -q -p ${{ secrets.WINDOWS_PFX_PASSWORD }} -importpfx MauiApp_version/MauiApp_version/MeTooSoftware.pfx NoRoot
     - name: Build
       run: dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}"      
    
