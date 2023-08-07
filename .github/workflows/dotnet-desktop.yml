@@ -1,16 +1,16 @@
 name: .NET
- 
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
- 
+
 jobs:
   build:
 
     runs-on: windows-latest
- 
+
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
@@ -26,21 +26,34 @@ jobs:
           displayVersion: '1.0'
       - name: Install MAUI workload
         run: dotnet workload install maui
-   
-  
-  
+
+      - name: Get Latest Commit Message
+        id: get_commit_message
+        run: |
+          git log -1 --pretty=format:%s ${{ github.sha }} > commit_message.txt
+        shell: bash
+
       - name: Bump Semantic Version
         id: bump_version
         run: |
-          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
-          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
-          $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+         COMMIT_MESSAGE=$(cat commit_message.txt)
+          CURRENT_VERSION=$(Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
+          VERSION_PARTS=($CURRENT_VERSION -split '\.')
+          if [[ $COMMIT_MESSAGE == *"Implementation"* ]]; then
+            NEW_VERSION="${VERSION_PARTS[0] + 1}.0.0"
+          elif [[ $COMMIT_MESSAGE == *"New Feature"* ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1] + 1}.0"
+          elif [[ $COMMIT_MESSAGE == *"Bugs Fix"* ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2] + 1}"
+          else
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2] + 1}"
+          fi
           (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
-    
+
       - name: Build
         run: | 
-          dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true     
-   
+          dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
