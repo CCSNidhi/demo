@@ -27,29 +27,49 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui
 
-      - name: Get Latest Commit Message
-        id: get_commit_message
+      - name: Get Current Version
+        id: get_version
         run: |
-          git log -1 --pretty=format:%s ${{ github.sha }} > commit_message.txt
+          $CURRENT_VERSION = (Get-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
+          echo "::set-output name=version::$CURRENT_VERSION"
 
-      - name: Bump Semantic Version
-        id: bump_version
+      - name: Determine Version Bump
+        id: determine_bump
         run: |
-          $COMMIT_MESSAGE = Get-Content -Path commit_message.txt
-          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
+          $COMMIT_MESSAGE = "$(git log -1 --pretty=format:%s)"
+          if [[ "$COMMIT_MESSAGE" == *"major"* ]]; then
+            echo "::set-output name=bump::major"
+          elif [[ "$COMMIT_MESSAGE" == *"minor"* ]]; then
+            echo "::set-output name=bump::minor"
+          elif [[ "$COMMIT_MESSAGE" == *"patch"* ]]; then
+            echo "::set-output name=bump::patch"
+          else
+            echo "::set-output name=bump::none"
+          fi
+
+      - name: Increment Version
+        id: increment_version
+        run: |
+          $CURRENT_VERSION = ${{ steps.get_version.outputs.version }}
+          $BUMP = ${{ steps.determine_bump.outputs.bump }}
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($COMMIT_MESSAGE -match "Major") {
-            $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], [int]$Matches[2] + 1, $Matches[3] }
-          } elseif ($COMMIT_MESSAGE -match "Bugs") {
-            $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], $Matches[2], [int]$Matches[3] + 1 }
-          } else {
-            Write-Host "Commit message did not match any patterns for version bump."
-            exit 1
-          }
-          
-          (Get-Content -Path YourAppDirectory/YourApp.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path YourAppDirectory/YourApp.csproj
+          if [[ "$BUMP" == "major" ]]; then
+            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
+          elif [[ "$BUMP" == "minor" ]]; then
+            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
+          elif [[ "$BUMP" == "patch" ]]; then
+            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+          else
+            $NEW_VERSION = $CURRENT_VERSION
+          fi
+          echo "::set-output name=new_version::$NEW_VERSION"
 
+      - name: Update Version in Project File
+        id: update_version
+        run: |
+          $NEW_VERSION = ${{ steps.increment_version.outputs.new_version }}
+          (Get-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj
       - name: Build
         run: | 
           dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
