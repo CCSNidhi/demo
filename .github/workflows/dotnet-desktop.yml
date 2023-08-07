@@ -27,7 +27,7 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui
     
-    
+  
   
       - name: Bump Semantic Version
         id: bump_version
