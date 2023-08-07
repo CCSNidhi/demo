@@ -41,7 +41,7 @@ jobs:
           
           if ($COMMIT_MESSAGE -match "Major") {
             $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], [int]$Matches[2] + 1, $Matches[3] }
-          } elseif ($COMMIT_MESSAGE -match "Bug Fix") {
+          } elseif ($COMMIT_MESSAGE -match "Bugs") {
             $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], $Matches[2], [int]$Matches[3] + 1 }
           } else {
             Write-Host "Commit message did not match any patterns for version bump."
