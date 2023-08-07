@@ -41,7 +41,7 @@ jobs:
           (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
     
       - name: Build
-        run: |
+        run: | 
           dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true     
    
       - name: Upload Build Artifacts
