@@ -27,37 +27,38 @@ jobs:
       - name: Get Last Commit Message
         id: commit_message
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          $COMMIT_MESSAGE = $(git log -1 --pretty=format:%s)
           echo "::set-output name=message::$COMMIT_MESSAGE"
       - name: Determine Version Bump
         id: determine_bump
         run: |
-          MESSAGE=${{ steps.commit_message.outputs.message }}
-          if [[ $MESSAGE == *"major"* ]]; then
+          $MESSAGE = ${{ steps.commit_message.outputs.message }}
+          if ($MESSAGE -like "*major*") {
             echo "::set-output name=bump::major"
-          elif [[ $MESSAGE == *"minor"* ]]; then
+          } elseif ($MESSAGE -like "*minor*") {
             echo "::set-output name=bump::minor"
-          elif [[ $MESSAGE == *"patch"* ]]; then
+          } elseif ($MESSAGE -like "*patch*") {
             echo "::set-output name=bump::patch"
-          else
+          } else {
             echo "::set-output name=bump::none"
-          fi
+          }
       - name: Increment Version
         id: increment_version
         run: |
-          BUMP=${{ steps.determine_bump.outputs.bump }}
-          CURRENT_VERSION=$(grep -oP '(?<=<Version>).*?(?=</Version>)' MauiApp_version/MauiApp_version/MauiApp_version.csproj)
-          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
-          if [[ "$BUMP" == "major" ]]; then
-            NEW_VERSION="${VERSION_PARTS[0] + 1}.0.0"
-          elif [[ "$BUMP" == "minor" ]]; then
-            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1] + 1}.0"
-          elif [[ "$BUMP" == "patch" ]]; then
-            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2] + 1}"
-          else
-            NEW_VERSION="$CURRENT_VERSION"
-          fi
-          sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" MauiApp_version/MauiApp_version/MauiApp_version.csproj
+          $BUMP = ${{ steps.determine_bump.outputs.bump }}
+          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
+          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
+          
+          if ($BUMP -eq "major") {
+            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
+          } elseif ($BUMP -eq "minor") {
+            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
+          } elseif ($BUMP -eq "patch") {
+            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+          } else {
+            $NEW_VERSION = $CURRENT_VERSION
+          }
+          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
       - name: Build
         run: dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
       - name: Upload Build Artifacts
