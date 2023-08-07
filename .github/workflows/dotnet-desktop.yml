@@ -1,4 +1,16 @@
-runs-on: windows-latest 
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
@@ -15,7 +27,7 @@ runs-on: windows-latest
       - name: Install MAUI workload
         run: dotnet workload install maui
 
-       - name: Get Latest Commit Message
+      - name: Get Latest Commit Message
         id: get_commit_message
         run: |
           git log -1 --pretty=format:%s ${{ github.sha }} > commit_message.txt
@@ -27,11 +39,11 @@ runs-on: windows-latest
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($COMMIT_MESSAGE -like "*Implementation*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).$($VERSION_PARTS[1]).$($VERSION_PARTS[2])"
+          if ($COMMIT_MESSAGE -like "*Major*") {
+            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
           } elseif ($COMMIT_MESSAGE -like "*New Feature*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).$($VERSION_PARTS[2])"
-          } elseif ($COMMIT_MESSAGE -like "*Documentation*") {
+            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
+          } elseif ($COMMIT_MESSAGE -like "*Bugs*") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
           } else {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
@@ -47,4 +59,5 @@ runs-on: windows-latest
         uses: actions/upload-artifact@v2
         with:
           path: ./**/*.msix
+
 
