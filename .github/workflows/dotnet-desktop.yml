@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest 
 
     steps:
@@ -37,15 +36,15 @@ jobs:
         id: determine_bump
         run: |
           $COMMIT_MESSAGE = "$(git log -1 --pretty=format:%s)"
-          if [[ "$COMMIT_MESSAGE" == *"major"* ]]; then
+          if ($COMMIT_MESSAGE -like "*major*") {
             echo "::set-output name=bump::major"
-          elif [[ "$COMMIT_MESSAGE" == *"minor"* ]]; then
+          } elseif ($COMMIT_MESSAGE -like "*minor*") {
             echo "::set-output name=bump::minor"
-          elif [[ "$COMMIT_MESSAGE" == *"patch"* ]]; then
+          } elseif ($COMMIT_MESSAGE -like "*patch*") {
             echo "::set-output name=bump::patch"
-          else
+          } else {
             echo "::set-output name=bump::none"
-          fi
+          }
 
       - name: Increment Version
         id: increment_version
@@ -54,15 +53,15 @@ jobs:
           $BUMP = ${{ steps.determine_bump.outputs.bump }}
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if [[ "$BUMP" == "major" ]]; then
+          if ($BUMP -eq "major") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
-          elif [[ "$BUMP" == "minor" ]]; then
+          } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          elif [[ "$BUMP" == "patch" ]]; then
+          } elseif ($BUMP -eq "patch") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
-          else
+          } else {
             $NEW_VERSION = $CURRENT_VERSION
-          fi
+          }
           echo "::set-output name=new_version::$NEW_VERSION"
 
       - name: Update Version in Project File
@@ -79,5 +78,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: ./**/*.msix
-
 
