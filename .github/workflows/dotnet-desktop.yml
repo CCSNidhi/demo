@@ -36,16 +36,16 @@ jobs:
       - name: Determine Version Bump
         id: determine_bump
         run: |
-          $COMMIT_MESSAGE = "$(git log -1 --pretty=format:%s)"
-          if ($COMMIT_MESSAGE -like "*major*") {
-            echo "::set-output name=bump::major"
-          } elseif ($COMMIT_MESSAGE -like "*minor*") {
-            echo "::set-output name=bump::minor"
-          } elseif ($COMMIT_MESSAGE -like "*patch*") {
-            echo "::set-output name=bump::patch"
-          } else {
-            echo "::set-output name=bump::none"
-          }
+           $COMMIT_MESSAGE = "$(git log -1 --pretty=format:%s)"
+           if ($COMMIT_MESSAGE -like "*major*") {
+           echo "::set-output name=bump::major"
+           } elseif ($COMMIT_MESSAGE -like "*minor*") {
+           echo "::set-output name=bump::minor"
+           } elseif ($COMMIT_MESSAGE -like "*patch*") {
+           echo "::set-output name=bump::patch"
+           } else {
+           echo "::set-output name=bump::none"
+           }
 
       - name: Increment Version
         id: increment_version
