@@ -20,5 +20,17 @@ public partial class MainPage : ContentPage
 
 		SemanticScreenReader.Announce(CounterBtn.Text);
 	}
+
+    private void CounterBtn1_Clicked(object sender, EventArgs e)
+    {
+        count++;
+
+        if (count == 1)
+            CounterBtn1.Text = $"Clicked {count} time";
+        else
+            CounterBtn1.Text = $"Clicked {count} times";
+
+        SemanticScreenReader.Announce(CounterBtn.Text);
+    }
 }
 

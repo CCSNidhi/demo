@@ -37,7 +37,7 @@
             <Button
                 x:Name="CounterBtn1"
                 Text="Click"
-               
+               Clicked="CounterBtn1_Clicked"
                 
                 HorizontalOptions="Center" />
 
