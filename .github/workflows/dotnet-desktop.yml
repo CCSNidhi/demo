@@ -26,7 +26,10 @@ jobs:
           displayVersion: '1.0'
       - name: Install MAUI workload
         run: dotnet workload install maui
-    
+      - name: Clean Up Old Artifacts
+        run: |
+          find . -type f -name "*.msix" -mtime +30 -exec rm -f {} \;
+        working-directory: ./ # Adjust the path accordingly
   
   
       - name: Bump Semantic Version
