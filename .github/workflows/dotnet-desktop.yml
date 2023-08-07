@@ -1,7 +1,7 @@
 name: .NET
 
-on: 
-  push: 
+on:
+  push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
@@ -30,7 +30,7 @@ jobs:
       - name: Get Current Version
         id: get_version
         run: |
-          $CURRENT_VERSION = (Get-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
+          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
           echo "::set-output name=version::$CURRENT_VERSION"
 
       - name: Determine Version Bump
@@ -69,7 +69,8 @@ jobs:
         id: update_version
         run: |
           $NEW_VERSION = ${{ steps.increment_version.outputs.new_version }}
-          (Get-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -MauiApp_version/MauiApp_version/MauiApp_version.csproj
+          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
+
       - name: Build
         run: | 
           dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
