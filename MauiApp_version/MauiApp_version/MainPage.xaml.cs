@@ -25,7 +25,7 @@ public partial class MainPage : ContentPage
     {
         count++;
 
-        if (count == 1)
+        if (count == 10)
             CounterBtn1.Text = $"Clicked {count} time";
         else
             CounterBtn1.Text = $"Clicked {count} times";
