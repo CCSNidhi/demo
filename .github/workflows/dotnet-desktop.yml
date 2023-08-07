@@ -29,9 +29,8 @@ jobs:
       - name: Get Current Version
         id: get_version
         run: |
-          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
+          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace '(?<=<Version>).*?(?=</Version>)'
           echo "::set-output name=version::$CURRENT_VERSION"
-
       - name: Determine Version Bump
         id: determine_bump
         run: |
