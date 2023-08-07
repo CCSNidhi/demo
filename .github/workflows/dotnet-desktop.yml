@@ -41,7 +41,7 @@ jobs:
           
           if ($COMMIT_MESSAGE -like "*Major*") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
-          } elseif ($COMMIT_MESSAGE -like "*New Feature*") {
+          } elseif ($COMMIT_MESSAGE -like "*Feature*") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
           } elseif ($COMMIT_MESSAGE -like "*Bugs*") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
