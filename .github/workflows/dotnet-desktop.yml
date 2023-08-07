@@ -39,17 +39,16 @@ jobs:
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($COMMIT_MESSAGE -like "*Major*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
-          } elseif ($COMMIT_MESSAGE -like "*Feature*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          } elseif ($COMMIT_MESSAGE -like "*Bugs*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+          if ($COMMIT_MESSAGE -match "Major") {
+            $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], [int]$Matches[2] + 1, $Matches[3] }
+          } elseif ($COMMIT_MESSAGE -match "Bug Fix") {
+            $NEW_VERSION = $CURRENT_VERSION -replace "(\d+)\.(\d+)\.(\d+)", { '{0}.{1}.{2}' -f $Matches[1], $Matches[2], [int]$Matches[3] + 1 }
           } else {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+            Write-Host "Commit message did not match any patterns for version bump."
+            exit 1
           }
           
-          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
+          (Get-Content -Path YourAppDirectory/YourApp.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path YourAppDirectory/YourApp.csproj
 
       - name: Build
         run: | 
