@@ -40,6 +40,12 @@
                Clicked="CounterBtn1_Clicked"
                 
                 HorizontalOptions="Center" />
+            <Button
+                x:Name="CounterBtn2"
+                Text="Click"
+            
+                
+                HorizontalOptions="Center" />
 
         </VerticalStackLayout>
     </ScrollView>
