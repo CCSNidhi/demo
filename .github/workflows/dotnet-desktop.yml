@@ -12,12 +12,12 @@ jobs:
     runs-on: windows-latest
  
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: MAUIAppVersion
         uses: managedcode/MAUIAppVersion@v1
         with:
@@ -27,21 +27,23 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui
     
-   
+    
+    
       - name: Bump Semantic Version
         id: bump_version
         run: |
-         CURRENT_VERSION=$(cat MauiApp_version/MauiApp_version/MauiApp_version.csproj | grep -oP '(?<=<Version>).*?(?=</Version>)')
-         VERSION_PARTS=($(echo $CURRENT_VERSION | tr '.' ' '))
-         NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
-         sed -i 's/<Version>.*<\/Version>/<Version>'$NEW_VERSION'<\/Version>/' MauiApp_version/MauiApp_version/MauiApp_version.csproj
-         echo "::set-output name=new_version::$NEW_VERSION"
+          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)"
+          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
+          $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
+          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
     
       - name: Build
-        run: dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true  
+        run: |
+          dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true     
    
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v2
         with:
-         path: ./**/*.msix
+          path: ./**/*.msix
+
 
