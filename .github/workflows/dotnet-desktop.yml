@@ -32,15 +32,15 @@ jobs:
       - name: Determine Version Bump
         id: determine_bump
         run: |
-          $MESSAGE = ${{ steps.commit_message.outputs.message }}
+          $MESSAGE = '${{ steps.commit_message.outputs.message }}'
           if ($MESSAGE -like "*major*") {
-            echo "::set-output name=bump::major"
+          echo "::set-output name=bump::major"
           } elseif ($MESSAGE -like "*minor*") {
-            echo "::set-output name=bump::minor"
+          echo "::set-output name=bump::minor"
           } elseif ($MESSAGE -like "*patch*") {
-            echo "::set-output name=bump::patch"
+          echo "::set-output name=bump::patch"
           } else {
-            echo "::set-output name=bump::none"
+          echo "::set-output name=bump::none"
           }
       - name: Increment Version
         id: increment_version
