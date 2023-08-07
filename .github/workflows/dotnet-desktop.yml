@@ -55,7 +55,7 @@ jobs:
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
           if ($BUMP -eq "major") {
-            $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
+            $NEW_VERSION = "$($VERSION_PARTS[1] + 1).0.0"
           } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
           } elseif ($BUMP -eq "patch") {
