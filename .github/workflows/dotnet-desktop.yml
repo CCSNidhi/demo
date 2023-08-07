@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+jobs: 
   build:
     runs-on: windows-latest 
 
@@ -33,8 +33,8 @@ jobs:
         id: determine_bump
         run: |
           $MESSAGE = '${{ steps.commit_message.outputs.message }}'
-          if ($MESSAGE -like "*major*") {
-          echo "::set-output name=bump::major"
+          if ($MESSAGE -like "*Bugs*") {
+          echo "::set-output name=bump::Bugs"
           } elseif ($MESSAGE -like "*minor*") {
           echo "::set-output name=bump::minor"
           } elseif ($MESSAGE -like "*patch*") {
@@ -49,7 +49,7 @@ jobs:
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($BUMP -eq "major") {
+          if ($BUMP -eq "Bugs") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
           } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
