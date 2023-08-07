@@ -16,7 +16,7 @@ runs-on: windows-latest
       - name: Install MAUI workload
         run: dotnet workload install maui
 
-      - name: Get Latest Commit Message
+       - name: Get Latest Commit Message
         id: get_commit_message
         run: |
           git log -1 --pretty=format:%s ${{ github.sha }} > commit_message.txt
