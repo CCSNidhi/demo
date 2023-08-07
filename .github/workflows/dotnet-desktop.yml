@@ -1,6 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: .NET
 
 on:
@@ -8,41 +5,54 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
- 
+
 jobs:
   build:
 
     runs-on: windows-latest
- 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - uses: actions/checkout@v3
-    - name: MAUIAppVersion
-      uses: managedcode/MAUIAppVersion@v1
-      with:
-          csproj: MauiApp_version/MauiApp_version/MauiApp_version.csproj
 
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Set up semver tool
+        uses: dsaltares/setup-semver@v1
+        with:
+          version: 'v1.0.0'  # Specify the version of semver tool you want to use
+
+      - name: MAUIAppVersion
+        uses: managedcode/MAUIAppVersion@v1
+        with:
+          csproj: MauiApp_version/MauiApp_version/MauiApp_version.csproj
           version: ${{ github.run_number }}
           displayVersion: '1.0'
-          
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Install MAUI workload
-      run: dotnet workload install maui
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
     
-    - name: Decrypt PFX File 
-      run: 
-       echo "${{ secrets.WINDOWS_PFX_FILE }}" › MauiApp_version/MauiApp_version/MeTooSoftware.pfx.asc
-       certutil -decode MauiApp_version/MauiApp_version/MeTooSoftware.pfx.asc MauiApp_version/MauiApp_version/MeTooSoftware.pfx
-    - name: Add Cert to Store
-      run: certutil -user -q -p ${{ secrets.WINDOWS_PFX_PASSWORD }} -importpfx MauiApp_version/MauiApp_version/MeTooSoftware.pfx NoRoot
-    - name: Build
-      run: dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}"      
-   
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3.1.0
-      with:
-       path: ./**/*.msix
+      
+
+    
+
+      - name: Bump Semantic Version
+        id: bump_version
+        run: |
+          # Logic to bump the semantic version using the semver tool
+          CURRENT_VERSION=$(cat MauiApp_version/MauiApp_version/MauiApp_version.csproj | grep -oP '(?<=<Version>).*?(?=</Version>)')
+          NEW_VERSION=$(semver bump patch $CURRENT_VERSION)
+          sed -i 's/<Version>.*<\/Version>/<Version>'$NEW_VERSION'<\/Version>/' MauiApp_version/MauiApp_version/MauiApp_version.csproj
+          echo "::set-output name=new_version::$NEW_VERSION"
+
+      - name: Build
+        run: |
+          dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          path: ./**/*.msix
+
