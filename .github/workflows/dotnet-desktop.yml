@@ -1,7 +1,7 @@
 name: .NET
 
-on:
-  push:
+on: 
+  push: 
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
@@ -15,8 +15,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 7.0.x 
-      - uses: actions/checkout@v2
+          dotnet-version: 7.0.x
       - name: MAUIAppVersion
         uses: managedcode/MAUIAppVersion@v1
         with:
@@ -25,58 +24,43 @@ jobs:
           displayVersion: '1.0.0'
       - name: Install MAUI workload
         run: dotnet workload install maui
-
-      - name: Get Current Version
-        id: get_version
+      - name: Get Last Commit Message
+        id: commit_message
         run: |
-          $csprojContent = Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj -Raw
-          $versionPattern = '(?<=<Version>).*?(?=</Version>)'
-          $CURRENT_VERSION = [regex]::Match($csprojContent, $versionPattern).Value
-          echo "::set-output name=version::$CURRENT_VERSION"
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          echo "::set-output name=message::$COMMIT_MESSAGE"
       - name: Determine Version Bump
         id: determine_bump
         run: |
-           $COMMIT_MESSAGE = "$(git log -1 --pretty=format:%s)"
-           if ($COMMIT_MESSAGE -like "*major*") {
-           echo "::set-output name=bump::major"
-           } elseif ($COMMIT_MESSAGE -like "*minor*") {
-           echo "::set-output name=bump::minor"
-           } elseif ($COMMIT_MESSAGE -like "*patch*") {
-           echo "::set-output name=bump::patch"
-           } else {
-           echo "::set-output name=bump::none"
-           }
-
+          MESSAGE=${{ steps.commit_message.outputs.message }}
+          if [[ $MESSAGE == *"major"* ]]; then
+            echo "::set-output name=bump::major"
+          elif [[ $MESSAGE == *"minor"* ]]; then
+            echo "::set-output name=bump::minor"
+          elif [[ $MESSAGE == *"patch"* ]]; then
+            echo "::set-output name=bump::patch"
+          else
+            echo "::set-output name=bump::none"
+          fi
       - name: Increment Version
         id: increment_version
         run: |
-          $CURRENT_VERSION = ${{ steps.get_version.outputs.version }}
-          $BUMP = ${{ steps.determine_bump.outputs.bump }}
-          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
-          
-          if ($BUMP -eq "major") {
-            $NEW_VERSION = "$($VERSION_PARTS[1] + 1).0.0"
-          } elseif ($BUMP -eq "minor") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          } elseif ($BUMP -eq "patch") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
-          } else {
-            $NEW_VERSION = $CURRENT_VERSION
-          }
-          echo "::set-output name=new_version::$NEW_VERSION"
-
-      - name: Update Version in Project File
-        id: update_version
-        run: |
-          $NEW_VERSION = ${{ steps.increment_version.outputs.new_version }}
-          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
-
+          BUMP=${{ steps.determine_bump.outputs.bump }}
+          CURRENT_VERSION=$(grep -oP '(?<=<Version>).*?(?=</Version>)' MauiApp_version/MauiApp_version/MauiApp_version.csproj)
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          if [[ "$BUMP" == "major" ]]; then
+            NEW_VERSION="${VERSION_PARTS[0] + 1}.0.0"
+          elif [[ "$BUMP" == "minor" ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1] + 1}.0"
+          elif [[ "$BUMP" == "patch" ]]; then
+            NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2] + 1}"
+          else
+            NEW_VERSION="$CURRENT_VERSION"
+          fi
+          sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" MauiApp_version/MauiApp_version/MauiApp_version.csproj
       - name: Build
-        run: | 
-          dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
-
+        run: dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           path: ./**/*.msix
-
