@@ -12,29 +12,36 @@ jobs:
     runs-on: windows-latest
  
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - uses: actions/checkout@v3
-    - name: MAUIAppVersion
-      uses: managedcode/MAUIAppVersion@v1
-      with:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - uses: actions/checkout@v3
+      - name: MAUIAppVersion
+        uses: managedcode/MAUIAppVersion@v1
+        with:
           csproj: MauiApp_version/MauiApp_version/MauiApp_version.csproj
-
           version: ${{ github.run_number }}
           displayVersion: '1.0'
-          
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Install MAUI workload
-      run: dotnet workload install maui
+      - name: Install MAUI workload
+        run: dotnet workload install maui
     
    
-    - name: Build
-      run: dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true       
+      - name: Bump Semantic Version
+        id: bump_version
+        run: |
+         CURRENT_VERSION=$(cat MauiApp_version/MauiApp_version/MauiApp_version.csproj | grep -oP '(?<=<Version>).*?(?=</Version>)')
+         VERSION_PARTS=($(echo $CURRENT_VERSION | tr '.' ' '))
+         NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((${VERSION_PARTS[2]} + 1))"
+         sed -i 's/<Version>.*<\/Version>/<Version>'$NEW_VERSION'<\/Version>/' MauiApp_version/MauiApp_version/MauiApp_version.csproj
+         echo "::set-output name=new_version::$NEW_VERSION"
+    
+      - name: Build
+        run: dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true  
    
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3.1.0
-      with:
-       path: ./**/*.msix   
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v1.0.0
+        with:
+         path: ./**/*.msix
+
