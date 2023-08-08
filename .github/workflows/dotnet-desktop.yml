@@ -35,8 +35,8 @@ jobs:
         run: |
           # Place your bump script content here
           # Remember to make the script executable: chmod +x bump.sh
-          ./bump.sh -p v ${{ steps.commit_message.outputs.message }}
-        working-directory: demo/.github/workflows 
+          ./dotnet-desktop.yml -p v ${{ steps.commit_message.outputs.message }}
+        working-directory: demo/.github/workflows/ 
            # Update this path
         env:
           PREFIX: v
