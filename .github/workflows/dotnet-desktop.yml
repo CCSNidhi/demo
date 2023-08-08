@@ -53,10 +53,10 @@ jobs:
       - name: Increment Version
         id: increment_version
         run: |
-          $BUMP = $env:{{ steps.determine_bump.outputs.bump }}
-          $VERSION_PARTS = $env:{{ steps.get_version.outputs.version }} -split '\.'
+          $BUMP = ${{ steps.determine_bump.outputs.bump }}
+          $VERSION_PARTS = ${{ steps.get_version.outputs.version }} -split '\.'
           
-          if ($BUMP -eq "major") {
+          if ($BUMP -like "major") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
           } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
