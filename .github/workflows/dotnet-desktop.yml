@@ -33,36 +33,45 @@ jobs:
       - name: Determine Version Bump
         id: determine_bump
         run: |
-          $MESSAGE = '${{ steps.commit_message.outputs.message }}'
-          if ($MESSAGE -like "*Bugs*") {
-          echo "::set-output name=bump::Bugs"
-          
-          } elseif ($MESSAGE -like "*minor*") {
-          echo "::set-output name=bump::minor"
-          } elseif ($MESSAGE -like "*patch*") {
-          echo "::set-output name=bump::patch"
+          $COMMIT_MESSAGE = git log -1 --pretty=format:%s
+          if ($COMMIT_MESSAGE -like "*major*") {
+            Write-Host "::set-output name=bump::major"
+          } elseif ($COMMIT_MESSAGE -like "*minor*") {
+            Write-Host "::set-output name=bump::minor"
+          } elseif ($COMMIT_MESSAGE -like "*patch*") {
+            Write-Host "::set-output name=bump::patch"
           } else {
-          
-            echo "::set-output name=bump::none"
+            Write-Host "::set-output name=bump::none"
           }
+
+      - name: Get Current Version
+        id: get_version
+        run: |
+          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
+          Write-Host "::set-output name=version::$CURRENT_VERSION"
+
       - name: Increment Version
         id: increment_version
         run: |
-          $BUMP = '${{ steps.commit_message.outputs.message }}'
-          $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
-          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
+          $BUMP = $env:{{ steps.determine_bump.outputs.bump }}
+          $VERSION_PARTS = $env:{{ steps.get_version.outputs.version }} -split '\.'
           
-          if ($BUMP -like "*bugs*") {
+          if ($BUMP -eq "major") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
-          } elseif ($BUMP -like "*minor*") {
+          } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          } elseif ($BUMP -like "*patch*") {
+          } elseif ($BUMP -eq "patch") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
           } else {
-            $NEW_VERSION = $CURRENT_VERSION
+            $NEW_VERSION = $env:{{ steps.get_version.outputs.version }}
           }
-           (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
+          Write-Host "::set-output name=new_version::$NEW_VERSION"
 
+      - name: Update Version in Project File
+        id: update_version
+        run: |
+          $NEW_VERSION = $env:{{ steps.increment_version.outputs.new_version }}
+          (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
 
           
       - name: Build
