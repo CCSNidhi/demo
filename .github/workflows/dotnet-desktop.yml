@@ -20,15 +20,12 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      - name: Download GitVersion
+      - name: Download and Extract GitVersion
         run: |
-          $url = "https://github.com/GitTools/GitVersion/releases/download/5.7.0/GitVersion_5.7.0.zip"
-          Invoke-WebRequest -Uri $url -OutFile GitVersion.zip
+          Invoke-WebRequest -Uri https://github.com/GitTools/GitVersion/releases/download/5.7.0/GitVersion_5.7.0.zip -OutFile GitVersion.zip
           Expand-Archive -Path GitVersion.zip -DestinationPath GitVersion
-        shell: pwsh
       - name: Run GitVersion
         run: .\GitVersion\gitversion.exe /config GitVersion.yml /output json /nofetch
-        shell: pwsh
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
         working-directory: ./MauiApp_version/MauiApp_version
@@ -37,6 +34,7 @@ jobs:
         with:
           name: maui-app-msix
           path: ./**/*.msix
+          
 
 
 
