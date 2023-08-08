@@ -10,18 +10,21 @@ jobs:
   build:
     runs-on: windows-latest  
 
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:7.0 # Use the appropriate version
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 7.0.x
+        run: dotnet --version
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Run GitVersion
-        run: dotnet tool install --global GitVersion.CommandLine --version 5.7.0
+        run: dotnet tool install -g GitVersion.Tool
+      - name: Display GitVersion Version
+        run: gitversion --version
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
         working-directory: ./MauiApp_version/MauiApp_version
@@ -29,6 +32,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
+          path: ./**/*.msix
           path: ./**/*.msix
 
 
