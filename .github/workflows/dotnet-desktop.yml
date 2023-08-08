@@ -34,13 +34,16 @@ jobs:
         run: |
           $MESSAGE = '${{ steps.commit_message.outputs.message }}'
           if ($MESSAGE -like "*Bugs*") {
-          echo "::set-output name=bump::Bugs"
+          - name: Set output
+            run: echo "{bump}={Bugs}" >> $GITHUB_OUTPUT
+          
           } elseif ($MESSAGE -like "*minor*") {
           echo "::set-output name=bump::minor"
           } elseif ($MESSAGE -like "*patch*") {
           echo "::set-output name=bump::patch"
           } else {
-          echo "::set-output name=bump::none"
+          
+            echo "::set-output name=bump::none"
           }
       - name: Increment Version
         id: increment_version
