@@ -1,6 +1,6 @@
 # sets the environment variables for GITHUB_TOKEN and NUGET_TOKEN
 # needed by semantic-version
-
+ 
 # NOTE: DO NOT USE YOUR REAL TOKENS
 # use the secure variables feature of appveyor to encrypt them. The encryption is linked to your account so these are safe to check-in to source(https://www.appveyor.com/docs/build-configuration/#secure-variables) 
 environment:
