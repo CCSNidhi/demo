@@ -20,56 +20,19 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      
-      - name: Get Last Commit Message
-        id: commit_message
-        run: |
-          cd MauiApp_version/MauiApp_version
-          $COMMIT_MESSAGE = $(git log -1 --pretty=format:%s)
-          echo "::set-output name=message::$COMMIT_MESSAGE"
-          
-      - name: Determine Version Bump
-        id: determine_bump
-        run: |
-          cd MauiApp_version/MauiApp_version
-          $MESSAGE = '${{ steps.commit_message.outputs.message }}'
-          if ($MESSAGE -like "*Bugs*") {
-            echo "::set-output name=bump::Bugs"
-          } elseif ($MESSAGE -like "*minor*") {
-            echo "::set-output name=bump::minor"
-          } elseif ($MESSAGE -like "*patch*") {
-            echo "::set-output name=bump::patch"
-          } else {
-            echo "::set-output name=bump::none"
-          }
-          
-      - name: Increment Version
-        id: increment_version
-        run: |
-          cd MauiApp_version/MauiApp_version
-          $BUMP = '${{ steps.determine_bump.outputs.bump }}'
-          $CURRENT_VERSION = (Get-Content -Path MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
-          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
-          
-          if ($BUMP -like "*Bugs*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
-          } elseif ($BUMP -like "*minor*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          } elseif ($BUMP -like "*patch*") {
-            $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
-          } else {
-            $NEW_VERSION = $CURRENT_VERSION
-          }
-          (Get-Content -Path MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version.csproj
-          
+      - name: Run GitVersion
+        id: gitversion
+        run: dotnet tool install -g GitVersion.Tool && gitversion /config GitVersion.yml /output json /nofetch
+        env:
+          DOTNET_ROOT: ${{ env.DOTNET_ROOT }}
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
+          name: maui-app-msix
           path: ./**/*.msix
-
 
 
 
