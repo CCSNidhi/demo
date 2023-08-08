@@ -47,7 +47,7 @@ jobs:
         run: |
           $BUMP = ${{ steps.commit_message.outputs.message }}'
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
-          $VERSION_PARTS = $CURRENT_VERSION -split '\.'
+          $VERSION_PARTS = $CURRENT_VERSION -split "\."
           
           if ($BUMP -like "Bugs") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
