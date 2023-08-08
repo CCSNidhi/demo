@@ -61,7 +61,8 @@ jobs:
           } else {
             $NEW_VERSION = $CURRENT_VERSION
           }
-           sed -i "s/<Version>.*<\/Version>/<Version>$NEW_VERSION<\/Version>/" MauiApp_version/MauiApp_version/MauiApp_version.csproj
+           sed -i "s|<Version>.*</Version>|<Version>$NEW_VERSION</Version>|" MauiApp_version/MauiApp_version/MauiApp_version.csproj
+
 
           
       - name: Build
