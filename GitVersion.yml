@@ -1,0 +1,6 @@
+mode: ContinuousDeployment
+increment: Minor
+tag-prefix: '[vV]'
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
+assembly-informational-format: '{Major}.{Minor}.{Patch}-beta.{CommitsSinceVersionSource}'
