@@ -52,11 +52,11 @@ jobs:
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($BUMP -like "Bugs") {
+          if ($BUMP -like "*bugs*") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
-          } elseif ($BUMP -like "minor") {
+          } elseif ($BUMP -like "*minor*") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
-          } elseif ($BUMP -eq "patch") {
+          } elseif ($BUMP -like "*patch*") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1]).$($VERSION_PARTS[2] + 1)"
           } else {
             $NEW_VERSION = $CURRENT_VERSION
