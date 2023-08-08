@@ -24,6 +24,12 @@ jobs:
           displayVersion: '1.0.0'
       - name: Install MAUI workload 
         run: dotnet workload install maui
+      - name: Decrypt PFX File
+        run:
+         echo "${{ varaibles.WINDOWS_PFX_FILE }}" > MeTooSoftware.pfx.asc
+         certutil -decode MeTooSoftware.pfx.asc MeTooSoftware.pfx
+      - name: Add Cert to Store
+        run: certutil -user -q -p ${{ secrets.WINDOWS_PFX_PASSWORD }} -importpfx MeTooSoftware.pfx NoRoot
       - name: Get Last Commit Message
         id: commit_message
         run: |
@@ -62,7 +68,7 @@ jobs:
           }
           (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj
       - name: Build
-        run: dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
+        run: dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_PFX_THUMBPRINT }}"
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
