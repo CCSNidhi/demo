@@ -45,11 +45,11 @@ jobs:
       - name: Increment Version
         id: increment_version
         run: |
-          $BUMP = ${{ steps.determine_bump.outputs.bump }}
+          $BUMP = ${{ steps.commit_message.outputs.message }}'
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version/MauiApp_version/MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
           
-          if ($BUMP -eq "Bugs") {
+          if ($BUMP -like "Bugs") {
             $NEW_VERSION = "$($VERSION_PARTS[0] + 1).0.0"
           } elseif ($BUMP -eq "minor") {
             $NEW_VERSION = "$($VERSION_PARTS[0]).$($VERSION_PARTS[1] + 1).0"
