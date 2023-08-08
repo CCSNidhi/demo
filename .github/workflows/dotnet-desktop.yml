@@ -17,14 +17,6 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
-          working-directory: ./MauiApp_version/MauiApp_version
-      - name: MAUIAppVersion
-        uses: managedcode/MAUIAppVersion@v1
-        with:
-          csproj: MauiApp_version.csproj
-          version: ${{ github.run_number }}
-          displayVersion: '1.0.0'
-          working-directory: ./MauiApp_version/MauiApp_version
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
@@ -32,13 +24,14 @@ jobs:
       - name: Get Last Commit Message
         id: commit_message
         run: |
+          cd MauiApp_version/MauiApp_version
           $COMMIT_MESSAGE = $(git log -1 --pretty=format:%s)
           echo "::set-output name=message::$COMMIT_MESSAGE"
-        working-directory: ./MauiApp_version/MauiApp_version
           
       - name: Determine Version Bump
         id: determine_bump
         run: |
+          cd MauiApp_version/MauiApp_version
           $MESSAGE = '${{ steps.commit_message.outputs.message }}'
           if ($MESSAGE -like "*Bugs*") {
             echo "::set-output name=bump::Bugs"
@@ -49,11 +42,11 @@ jobs:
           } else {
             echo "::set-output name=bump::none"
           }
-        working-directory: ./MauiApp_version/MauiApp_version
           
       - name: Increment Version
         id: increment_version
         run: |
+          cd MauiApp_version/MauiApp_version
           $BUMP = '${{ steps.determine_bump.outputs.bump }}'
           $CURRENT_VERSION = (Get-Content -Path MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)"
           $VERSION_PARTS = $CURRENT_VERSION -split '\.'
@@ -68,7 +61,6 @@ jobs:
             $NEW_VERSION = $CURRENT_VERSION
           }
           (Get-Content -Path MauiApp_version.csproj) -replace "(?<=<Version>).*?(?=</Version>)", $NEW_VERSION | Set-Content -Path MauiApp_version.csproj
-        working-directory: ./MauiApp_version/MauiApp_version
           
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
