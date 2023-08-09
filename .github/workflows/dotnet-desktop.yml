@@ -22,7 +22,7 @@ jobs:
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
 
-      - name: Determine Version
+       - name: Determine Version
         id: determine_version
         run: |
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build
         run: |
-          VERSION=$env:new_version
+          $VERSION=$env:new_version
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$VERSION
         working-directory: ./MauiApp_version/MauiApp_version
 
