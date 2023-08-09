@@ -13,13 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v2
         with:
-          dotnet-version: 7.0.x
+          node-version: '14'
 
-      - name: Install .NET SDK tool - Versionize
-        run: dotnet tool install -g Versionize.Tool
+      - name: Install Versionize
+        run: npm install -g versionize
 
       - name: Setup git
         run: |
@@ -29,11 +29,10 @@ jobs:
       - name: Versionize Release
         id: versionize
         run: |
-          version_number=$(dotnet versionize --changelog-all --exit-insignificant-commits)
+          version_number=$(versionize --changelog-all --exit-insignificant-commits)
           echo "Generated Version: $version_number"
           echo "VersionNumber=$version_number" >> $GITHUB_ENV
         continue-on-error: true
-
       - name: No release required
         if: steps.versionize.outcome != 'success'
         run: echo "Skipping Release. No release required."
