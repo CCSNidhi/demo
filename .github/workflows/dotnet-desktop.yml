@@ -8,7 +8,7 @@ on:
 
 jobs: 
   build:
-    runs-on: windows-latest  
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -20,10 +20,6 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      - name: Install dotnet-gitversion
-        run: dotnet tool install --global dotnet-gitversion --version 5.2.3
-      - name: Run dotnet-gitversion
-        run: dotnet gitversion /config GitVersion.yml /output json /nofetch
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
         working-directory: ./MauiApp_version/MauiApp_version
