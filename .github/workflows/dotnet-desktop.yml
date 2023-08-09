@@ -35,8 +35,12 @@ jobs:
       - name: No release required
         if: steps.versionize.outcome != 'success'
         run: echo "Skipping Release. No release required."
-       
-    
+      - name: Debug Payload
+        run: echo "$GITHUB_EVENT_PATH" && cat "$GITHUB_EVENT_PATH"
+      - name: Debug API Response
+        run: |
+         echo "$GITHUB_EVENT_PATH" && cat "$GITHUB_EVENT_PATH"
+         echo "$HTTP_RESPONSE"  # If available
   
       - name: "Create release"
         uses: "actions/github-script@v5"
