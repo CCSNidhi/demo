@@ -29,12 +29,14 @@ jobs:
          git config --local user.name "CCSNidhi"
       - name: Versionize Release
         id: versionize
-        run: versionize --changelog-all --exit-insignificant-commits
+        run: |
+         version_number=$(versionize --changelog-all --exit-insignificant-commits)
+         echo "VersionNumber=$version_number" >> $GITHUB_ENV
         continue-on-error: true
       - name: No release required
         if: steps.versionize.outcome != 'success'
         run: echo "Skipping Release. No release required."
-  
+      
       - name: "Create release"
         if: steps.versionize.outcome == 'success'
         uses: "actions/github-script@v5"
@@ -61,7 +63,7 @@ jobs:
       - name: Build
         run: |
         
-         dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
+         dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=${{ env.VersionNumber }}
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
