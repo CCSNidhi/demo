@@ -33,7 +33,7 @@ jobs:
       - name: Verify Versionize Installation
         run: versionize --version
        
-        continue-on-error: true
+       
       - name: No release required
         if: steps.versionize.outcome != 'success'
         run: echo "Skipping Release. No release required."
