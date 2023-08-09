@@ -24,30 +24,28 @@ jobs:
       - name: Determine Version
         id: determine_version
         run: |
-          LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          if [[ $LAST_COMMIT_MESSAGE =~ \[major\] ]]; then
-            NEW_VERSION=$(dotnet version major)
-          elif [[ $LAST_COMMIT_MESSAGE =~ \[minor\] ]]; then
-            NEW_VERSION=$(dotnet version minor)
-          else
-            NEW_VERSION=$(dotnet version patch)
-          fi
+          $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
+            $NEW_VERSION=$(dotnet version major)
+          } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
+            $NEW_VERSION=$(dotnet version minor)
+          } else {
+            $NEW_VERSION=$(dotnet version patch)
+          }
           echo "New version: $NEW_VERSION"
-          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
+          echo "new_version=$NEW_VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Build
         run: |
-          VERSION=$new_version
+          $VERSION=$env:new_version
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$VERSION
         working-directory: ./MauiApp_version/MauiApp_version
-
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
-          path: ./**/*.msix
-          
+          path: ./**/*.msix          
 
 
 
