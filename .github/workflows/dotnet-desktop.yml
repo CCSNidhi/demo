@@ -25,16 +25,16 @@ jobs:
       - name: Determine Version
         id: determine_version
         run: |
-          LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          if [[ $LAST_COMMIT_MESSAGE =~ \[major\] ]]; then
-            NEW_VERSION=$(dotnet version major)
-          elif [[ $LAST_COMMIT_MESSAGE =~ \[minor\] ]]; then
-            NEW_VERSION=$(dotnet version minor)
-          else
-            NEW_VERSION=$(dotnet version patch)
-          fi
-          echo "New version: $NEW_VERSION"
-          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
+          $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          if ($LAST_COMMIT_MESSAGE -match '\[major\]') {
+            $NEW_VERSION=$(dotnet version major)
+          } elseif ($LAST_COMMIT_MESSAGE -match '\[minor\]') {
+            $NEW_VERSION=$(dotnet version minor)
+          } else {
+            $NEW_VERSION=$(dotnet version patch)
+          }
+          Write-Host "New version: $NEW_VERSION"
+          Write-Host "new_version=$NEW_VERSION" >> $env:GITHUB_ENV
 
       - name: Build
         run: |
