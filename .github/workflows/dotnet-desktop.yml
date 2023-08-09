@@ -22,7 +22,7 @@ jobs:
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
 
-       - name: Determine Version
+      - name: Determine Version
         id: determine_version
         run: |
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
