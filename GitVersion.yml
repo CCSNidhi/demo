@@ -1,6 +1,25 @@
-mode: ContinuousDeployment
-increment: Minor
-tag-prefix: '[vV]' 
-assembly-versioning-scheme: MajorMinorPatch
-assembly-file-versioning-scheme: MajorMinorPatch
-assembly-informational-format: '{Major}.{Minor}.{Patch}-beta.{CommitsSinceVersionSource}'
+mode: Mainline
+assembly-versioning-format: '{Major}.{Minor}.{Patch}'
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber ?? 0}'
+branches:
+  master:
+    is-mainline: true
+    increment: None
+  major:
+    regex: ^major[\/-]
+    increment: Major
+    source-branches: ['master']
+  minor:
+    regex: ^minor[\/-]
+    increment: Minor
+    source-branches: ['master', 'support']
+  patch:
+    regex: ^patch[\/-]
+    increment: Patch
+    source-branches: ['master', 'support']
+  support:
+    is-mainline: true
+    regex: ^support[/-]
+    tag: ''
+    increment: None
+    source-branches: ['master']
