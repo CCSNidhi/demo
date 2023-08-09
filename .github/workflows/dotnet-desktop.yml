@@ -1,45 +1,47 @@
 name: .NET
 
-on: 
-  push: 
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ] 
+on:
+  push:
+    branches:
+      - main
 
-jobs:  
+jobs:
   build:
-    runs-on: Windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
+
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      
+
       - name: Determine Version
         id: determine_version
         run: |
-          $VERSION=$(git describe --abbrev=0 --tags)
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
           if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
-            $NEW_VERSION="1.0.0"  # Adjust the version calculation as needed
+            Write-Output "##vso[task.setvariable variable=new_version]major"
           } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
-            $NEW_VERSION="0.1.0"  # Adjust the version calculation as needed
+            Write-Output "##vso[task.setvariable variable=new_version]minor"
           } else {
-            $NEW_VERSION="0.0.1"  # Adjust the version calculation as needed
+            Write-Output "##vso[task.setvariable variable=new_version]patch"
           }
-          echo "New version: $NEW_VERSION"
-          echo "##[set-output name=new_version]$NEW_VERSION"
-          echo "new_version=$NEW_VERSION" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Use New Version
+        run: |
+          $VERSION=$env:new_version
+          Write-Output "Using version: $VERSION"
 
       - name: Build
         run: |
-          $VERSION=$env:new_version
+          VERSION=$env:new_version
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$VERSION
         working-directory: ./MauiApp_version/MauiApp_version
 
@@ -47,7 +49,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
-          path: ./**/*.msix          
+          path: ./**/*.msix
+          
 
 
 
