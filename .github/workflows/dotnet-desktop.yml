@@ -25,9 +25,9 @@ jobs:
         id: determine_version
         run: |
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
+          if ($LAST_COMMIT_MESSAGE -like "\[major\]") {
             dotnet version major
-          } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
+          } elseif ($LAST_COMMIT_MESSAGE -like "\[minor\]") {
             dotnet version minor
           } else {
             dotnet version patch
@@ -37,7 +37,9 @@ jobs:
           echo "##[set-output name=new_version]$NEW_VERSION"
 
       - name: Build
-        run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
+        run: |
+          $VERSION=$(echo "${{ steps.determine_version.outputs.new_version }}")
+          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$VERSION
         working-directory: ./MauiApp_version/MauiApp_version
 
       - name: Upload Build Artifacts
