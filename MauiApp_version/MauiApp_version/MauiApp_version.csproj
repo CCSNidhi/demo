@@ -19,6 +19,7 @@
 		<ApplicationIdGuid>b5149a34-ebc0-487e-83e9-f93773f39d3b</ApplicationIdGuid>
 
 		<!-- Versions -->
+                <Version>1.0.0</Version>
 		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
                 <NuGetVersion Condition="'$(NuGetVersion)' == ''">$env:new_version</NuGetVersion>
