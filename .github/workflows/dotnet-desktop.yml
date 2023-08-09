@@ -35,12 +35,12 @@ jobs:
         uses: "actions/github-script@v5"
         with:
          github-token: "${{ secrets.GIT_TOKEN }}"
-        script: |
-         try {
-         const tags_url = context.payload.repository.tags_url + "?per_page=1"
-         const result = await github.request(tags_url)
-         const current_tag = result.data[0].name
-         await github.rest.repos.createRelease({
+         script: |
+          try {
+          const tags_url = context.payload.repository.tags_url + "?per_page=1"
+          const result = await github.request(tags_url)
+          const current_tag = result.data[0].name
+          await github.rest.repos.createRelease({
           draft: false,
           generate_release_notes: true,
           name: current_tag,
@@ -51,7 +51,7 @@ jobs:
           });
           } catch (error) {
           core.setFailed(error.message);
-         }
+          }
       
       - name: Build
         run: |
