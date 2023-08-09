@@ -20,9 +20,28 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
+      
+      - name: Determine Version
+        id: determine_version
+        run: |
+          export VERSION=$(git describe --abbrev=0 --tags)
+          export LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          if [[ $LAST_COMMIT_MESSAGE =~ \[major\] ]]; then
+            export NEW_VERSION=$(dotnet bump major $VERSION)
+          elif [[ $LAST_COMMIT_MESSAGE =~ \[minor\] ]]; then
+            export NEW_VERSION=$(dotnet bump minor $VERSION)
+          else
+            export NEW_VERSION=$(dotnet bump patch $VERSION)
+          fi
+          echo "::set-output name=new_version::$NEW_VERSION"
+
+      - name: Display New Version
+        run: echo "New version: ${{ steps.determine_version.outputs.new_version }}"
+
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
         working-directory: ./MauiApp_version/MauiApp_version
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
