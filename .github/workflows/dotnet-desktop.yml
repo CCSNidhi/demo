@@ -67,8 +67,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
-          path: ./**/*.msix
-        
+          path: ./**/*.msix      
 
 
 
