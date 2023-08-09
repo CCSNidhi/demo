@@ -27,14 +27,15 @@ jobs:
           $VERSION=$(git describe --abbrev=0 --tags)
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
           if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
-            $NEW_VERSION=$(dotnet bump major $VERSION)
+            $NEW_VERSION="1.0.0"  # Adjust the version calculation as needed
           } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
-            $NEW_VERSION=$(dotnet bump minor $VERSION)
+            $NEW_VERSION="0.1.0"  # Adjust the version calculation as needed
           } else {
-            $NEW_VERSION=$(dotnet bump patch $VERSION)
+            $NEW_VERSION="0.0.1"  # Adjust the version calculation as needed
           }
           echo "New version: $NEW_VERSION"
-          echo "::set-output name=new_version::$NEW_VERSION"
+          echo "##[set-output name=new_version]$NEW_VERSION"
+
 
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
