@@ -22,26 +22,23 @@ jobs:
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
 
-      - name: Determine Version
+       - name: Determine Version
         id: determine_version
         run: |
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
           if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
-            Write-Output "##vso[task.setvariable variable=new_version]major"
+            $NEW_VERSION=$(dotnet version major)
           } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
-            Write-Output "##vso[task.setvariable variable=new_version]minor"
+            $NEW_VERSION=$(dotnet version minor)
           } else {
-            Write-Output "##vso[task.setvariable variable=new_version]patch"
+            $NEW_VERSION=$(dotnet version patch)
           }
-
-      - name: Use New Version
-        run: |
-          $VERSION=$env:new_version
-          Write-Output "Using version: $VERSION"
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Build
         run: |
-          $VERSION=$env:new_version
+          $VERSION=$new_version
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$VERSION
         working-directory: ./MauiApp_version/MauiApp_version
 
