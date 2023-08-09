@@ -25,9 +25,9 @@ jobs:
         id: determine_version
         run: |
           $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
+          if ($LAST_COMMIT_MESSAGE -like "\[major\]") {
             $NEW_VERSION=$(dotnet version major)
-          } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
+          } elseif ($LAST_COMMIT_MESSAGE -like "\[minor\]") {
             $NEW_VERSION=$(dotnet version minor)
           } else {
             $NEW_VERSION=$(dotnet version patch)
