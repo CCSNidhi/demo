@@ -8,7 +8,7 @@ on:
 
 jobs: 
   build:
-    runs-on: Windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -24,19 +24,17 @@ jobs:
       - name: Determine Version
         id: determine_version
         run: |
-          export VERSION=$(git describe --abbrev=0 --tags)
-          export LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          if [[ $LAST_COMMIT_MESSAGE =~ \[major\] ]]; then
-            export NEW_VERSION=$(dotnet bump major $VERSION)
-          elif [[ $LAST_COMMIT_MESSAGE =~ \[minor\] ]]; then
-            export NEW_VERSION=$(dotnet bump minor $VERSION)
-          else
-            export NEW_VERSION=$(dotnet bump patch $VERSION)
-          fi
+          $VERSION=$(git describe --abbrev=0 --tags)
+          $LAST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          if ($LAST_COMMIT_MESSAGE -match "\[major\]") {
+            $NEW_VERSION=$(dotnet bump major $VERSION)
+          } elseif ($LAST_COMMIT_MESSAGE -match "\[minor\]") {
+            $NEW_VERSION=$(dotnet bump minor $VERSION)
+          } else {
+            $NEW_VERSION=$(dotnet bump patch $VERSION)
+          }
+          echo "New version: $NEW_VERSION"
           echo "::set-output name=new_version::$NEW_VERSION"
-
-      - name: Display New Version
-        run: echo "New version:${{ steps.determine_version.outputs.new_version }}"
 
       - name: Build
         run: dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true 
