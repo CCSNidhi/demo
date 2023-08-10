@@ -35,7 +35,8 @@ jobs:
         if: steps.versionize.outcome != 'success'
         uses: "actions/github-script@v5"
         with:
-         github-token: "${{ secrets.GIT_TOKEN }}"
+         curl -H "Authorization: Bearer YOUR_GITHUB_TOKEN" "https://api.github.com/repos/CCSNidhi/demo/tags"
+
          script: |
           try {
             const tags_url = context.payload.repository.tags_url + "?per_page=1"
