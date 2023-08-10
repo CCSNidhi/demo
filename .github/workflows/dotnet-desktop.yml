@@ -43,7 +43,7 @@ jobs:
         echo "previous-version=$PREVIOUS_VERSION" >> "$GITHUB_OUTPUTS"
   other-job:
       name: Some Other Job
-      runs-on:  ubuntu-latest
+      runs-on:  Windows-latest
       steps:
       - name: Verify Outputs (IN SOME OTHER JOB)
         run: |
