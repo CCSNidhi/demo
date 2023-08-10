@@ -22,17 +22,20 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+           fetch-depth: 1    
+
       - name: Run Versionize
         run: |
-         git config user.email "ntailorchambal@gmail.com"
-         git config user.name "CCSNidhi"
-         git fetch --depth=full origin ${GITHUB_REF}
-         git reset --hard origin/${GITHUB_REF}
          dotnet tool install --global Versionize
          versionize --changelog-all --exit-insignificant-commits
-         env:
-          GITHUB_REF: ${{ github.ref }}
-  
+
+      - name: Fetch Full History
+        run: |
+          git fetch --deepen=1000000  # Fetch the remaining history
+        continue-on-error: true  # Continue even if there's an error  
       - name: "Create release"
         if: steps.versionize.outcome == 'success'
         uses: "actions/github-script@v5"
