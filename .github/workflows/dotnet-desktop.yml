@@ -33,7 +33,7 @@ jobs:
         name: Commit metadata file
         if: steps.versioning_job.outputs.modified_files
         run: |
-          git config --local user.email "$GITHUB_ACTOR@users.ntailorchambal@gmail.com"
+          git config --local user.email "$GITHUB_ACTOR@ntailorchambal@gmail.com"
           git config --local user.name "$CCSNidhi"
           git commit -am "Versioning for ${{ steps.versioning_job.outputs.modified_files }}"
       - name: Push changes
