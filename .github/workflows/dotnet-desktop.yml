@@ -27,7 +27,7 @@ jobs:
  
   use-action:
     name: Verify GitOps AutoVer Action
-    runs-on: ubuntu-latest
+    runs-on: Windows-latest
     steps:
      - uses: actions/checkout@v3
      - name: Run GitOps Automatic Versioning Action
