@@ -32,22 +32,34 @@ jobs:
      - uses: actions/checkout@v3
      - name: Run GitOps Automatic Versioning Action
        id: gitops-autover
-       uses: AlexAtkinson/github-action-gitops-autover@0.1.7
-     - name: Verify Outputs
+       uses: AlexAtkinson/github-action-gitops-autover@2.0
+     - name: Verify Outputs (IN SAME JOB)
        run: |
         NEW_VERSION=${{ steps.gitops-autover.outputs.new-version }}
         echo "new-version: $NEW_VERSION"
+        echo "new-version=$NEW_VERSION" >> "$GITHUB_OUTPUTS"
         PREVIOUS_VERSION=${{ steps.gitops-autover.outputs.previous-version }}
         echo "previous-version: $PREVIOUS_VERSION"
+        echo "previous-version=$PREVIOUS_VERSION" >> "$GITHUB_OUTPUTS"
+  other-job:
+      name: Some Other Job
+      runs-on:  ubuntu-latest
+      steps:
+      - name: Verify Outputs (IN SOME OTHER JOB)
+        run: |
+          NEW_VER="${{ needs.version-job.outputs.new-version }}"
+          OLD_VER="${{ needs.version-job.outputs.previous-version }}"
+          echo "new: $NEW_VER"
+          echo "old: $OLD_VER"
         
-     - name: Build
-       run: |
+      - name: Build
+        run: |
         
          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
          working-directory: ./MauiApp_version/MauiApp_version
-     - name: Upload Build Artifacts
-       uses: actions/upload-artifact@v2
-       with:
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
           name: maui-app-msix
           path: ./**/*.msix
 
