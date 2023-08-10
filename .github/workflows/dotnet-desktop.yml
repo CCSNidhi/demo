@@ -35,7 +35,7 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-          read -r versionFragment < ${{ env.VERSION_BUMP_FILE }}
+          read -r versionFragment  ${{ env.VERSION_BUMP_FILE }}
           echo "'$versionFragment' version will be incremented"
           echo "::set-env name=VERSION_FRAGMENT::${versionFragment}"
 
