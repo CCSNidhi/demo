@@ -33,7 +33,7 @@ jobs:
       - name: Get Latest Tag Name
         id: get-latest-tag
         run: |
-         $API_RESPONSE = Invoke-RestMethod -Uri "https://api.github.com/repos/CCSNidhi/demo/tags" -Headers @{"Authorization"="Bearer $env:GITHUB_TOKEN"} 
+         $API_RESPONSE = Invoke-RestMethod -Uri "https://api.github.com/repos/CCSNidhi/demo/tags" -Headers @{"Authorization"="Bearer "${{ secrets.GITHUB_TOKEN }}"} 
          $LATEST_TAG_NAME = $API_RESPONSE[0].name
          Write-Host "Latest Tag Name: $LATEST_TAG_NAME"
 
