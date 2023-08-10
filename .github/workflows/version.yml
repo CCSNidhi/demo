@@ -1,17 +1,18 @@
 name: CI / Bump version
 on:
-    push:
-        branches:
-            - dev
-jobs: 
-    bump:
-        name: "Bump Version"
-        runs-on: Windows-latest
-        steps:
-            - name: "Checkout source code"
-              uses: "actions/checkout@v2"
-              with:
-                ref: ${{ github.ref }}
-                fetch-depth: 0
-            - name: "Bump version"
-              uses: Wawa27/automatic-version-bump@main
+  pull_request:
+    branches:
+      - dev
+    types: [closed]
+jobs:
+  bump:
+    if: github.event.pull_request.merged == true
+    name: "Bump Version"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v3"
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          fetch-depth: 0
+      - name: "Bump version"
+        uses: ./
