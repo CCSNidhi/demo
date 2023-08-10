@@ -30,12 +30,21 @@ jobs:
           git config --local user.email "ntailorchambal@gmail.com"
           git config --local user.name "CCSNidhi"
 
-      - name: Get Latest Tag Name
-        id: get-latest-tag
-        run: |
-         $API_RESPONSE = Invoke-RestMethod -Uri "https://api.github.com/repos/CCSNidhi/demo/tags" -Headers @{"Authorization"="Bearer "${{ secrets.GITHUB_TOKEN }}"} 
-         $LATEST_TAG_NAME = $API_RESPONSE[0].name
-         Write-Host "Latest Tag Name: $LATEST_TAG_NAME"
+      - name: Add Latest Tag Name Comment
+        if: success()  # Only add the comment if the workflow was successful
+        uses: actions/github-script@v5
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            const issueOrPullRequestNumber = context.issue.number; // Get the issue or pull request number
+            const commentBody = `Latest Tag Name: ${steps.get-latest-tag.outputs.LATEST_TAG_NAME}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueOrPullRequestNumber,
+              body: commentBody
+            });
 
       - name: Versionize Release
         id: versionize
