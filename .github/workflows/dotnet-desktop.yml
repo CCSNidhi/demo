@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: 7.0.x
 
-      - name: Install MAUI workload 
+      - name: Install MAUI workload  
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Checkout code
