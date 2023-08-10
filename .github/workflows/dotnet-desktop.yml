@@ -23,7 +23,7 @@ jobs:
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Clone full repository
-        run: git clone --depth=full https://github.com/CCSNidhi/repo.git https://github.com/CCSNidhi/demo.git
+        run: git clone --depth=0 https://github.com/CCSNidhi/repo.git https://github.com/CCSNidhi/demo.git
       - name: Run versionize
         run: versionize --changelog-all --exit-insignificant-commits
         working-directory: full-repo
