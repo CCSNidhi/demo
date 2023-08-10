@@ -36,6 +36,9 @@ jobs:
          $versionFragment = Get-Content $env:VERSION_BUMP_FILE -Raw
          Write-Host "'$versionFragment' version will be incremented"
          Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
+        shell: pwsh
+        env:
+          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
 
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
