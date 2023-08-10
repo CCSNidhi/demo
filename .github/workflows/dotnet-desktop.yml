@@ -42,7 +42,8 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             const issueOrPullRequestNumber = context.issue.number;
-            const commentBody = `Latest Tag Name: ${process.env.LATEST_TAG_NAME}`;
+            const latestTag = process.env.LATEST_TAG_NAME;
+            const commentBody = `Latest Tag Name: ${latestTag}`;
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -50,6 +51,12 @@ jobs:
               issue_number: issueOrPullRequestNumber,
               body: commentBody
             });
+
+
+
+
+
+
 
 
 
