@@ -35,13 +35,12 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         $versionFragment = Get-Content '${env:VERSION_BUMP_FILE}'
-         Write-Host "'$versionFragment' version will be incremented"
-         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
+          $versionFragment = Get-Content $env:VERSION_BUMP_FILE
+          Write-Host "'$versionFragment' version will be incremented"
+          Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
         env:
-          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
-
+         DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
 
 
 
