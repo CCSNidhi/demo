@@ -23,33 +23,31 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      - name: Automatic Versioning
-        uses: nicupavel/action-files-version-increment@v2
-      - name: Get the output time
-        run: echo "The time was ${{ steps.versioning_job.outputs.time }}"
-      - name: Get list of modified files
-        run: echo "Modified files ${{ steps.versioning_job.outputs.modified_files }}"
-      - id: commit_if_modified
-        name: Commit metadata file
-        if: steps.versioning_job.outputs.modified_files
-        run: |
-         git config --local user.email "ntailorchambal@gmail.com"
-         git config --local user.name "CCSNidhi"
-         git commit -am "Versioning for ${{ steps.versioning_job.outputs.modified_files }}"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.main }}
       
-      - name: Build
-        run: |
+ 
+  use-action:
+    name: Verify GitOps AutoVer Action
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v3
+     - name: Run GitOps Automatic Versioning Action
+       id: gitops-autover
+       uses: AlexAtkinson/github-action-gitops-autover@0.1.7
+     - name: Verify Outputs
+       run: |
+        NEW_VERSION=${{ steps.gitops-autover.outputs.new-version }}
+        echo "new-version: $NEW_VERSION"
+        PREVIOUS_VERSION=${{ steps.gitops-autover.outputs.previous-version }}
+        echo "previous-version: $PREVIOUS_VERSION"
+        
+     - name: Build
+       run: |
         
          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-        working-directory: ./MauiApp_version/MauiApp_version
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
-        with:
+         working-directory: ./MauiApp_version/MauiApp_version
+     - name: Upload Build Artifacts
+       uses: actions/upload-artifact@v2
+       with:
           name: maui-app-msix
           path: ./**/*.msix
 
