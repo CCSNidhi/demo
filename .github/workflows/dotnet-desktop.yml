@@ -33,11 +33,9 @@ jobs:
       - name: Get Latest Tag Name
         id: get-latest-tag
         run: |
-          API_RESPONSE=$(curl -sH "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.api_url }}/repos/${{ github.repository }}/tags")
-          LATEST_TAG_NAME=$(echo "$API_RESPONSE" | jq -r '.[0].name')
-          echo "Latest Tag Name: $LATEST_TAG_NAME"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          $API_RESPONSE = Invoke-RestMethod -Uri "https://api.github.com/repos/CCSNidhi/demo/tags" -Headers @{"Authorization"="Bearer $env:GITHUB_TOKEN"} 
+          $LATEST_TAG_NAME = $API_RESPONSE[0].name
+          Write-Host "Latest Tag Name: $LATEST_TAG_NAME"
 
       - name: Versionize Release
         id: versionize
@@ -49,7 +47,7 @@ jobs:
         run: echo "Skipping Release. No release required."
 
       - name: Create Release
-        if: steps.versionize.outcome != 'success'
+        if: steps.versionize.outcome == 'success'
         uses: actions/github-script@v5
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
