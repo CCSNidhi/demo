@@ -30,7 +30,9 @@ jobs:
          git config --local user.email "ntailorchambal@gmail.com"
          git config --local user.name "CCSNidhi"
       
-      
+         new Buffer(number)            // Old
+         Buffer.alloc(number)          // New
+
       - name: "Create release"
         uses: "actions/github-script@v5"
         with:
