@@ -8,7 +8,9 @@ on:
 jobs:
   build:
     runs-on: Windows-latest
-
+    env:
+         VERSION_FILE_NAME: 'VERSION'
+         VERSION_BUMP_FILE: 'version_fragment'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,9 +24,7 @@ jobs:
       - name: Install MAUI workload  
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-        env:
-         VERSION_FILE_NAME: 'VERSION'
-         VERSION_BUMP_FILE: 'version_fragment'
+        
          
  
       - name: Checkout repository
