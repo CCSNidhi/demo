@@ -29,16 +29,24 @@ jobs:
  
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      - name: Debug Environment Variable
+        run: |
+          echo "VERSION_BUMP_FILE: $env:VERSION_BUMP_FILE"
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         $versionFragment = Get-Content $env:VERSION_BUMP_FILE -Raw
-         Write-Host "'$versionFragment' version will be incremented"
-         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
-        shell: pwsh
-        env:
-          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+         versionFragment=$(cat $VERSION_BUMP_FILE)
+         echo "'$versionFragment' version will be incremented"
+         echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
+         shell: bash
+         env:
+         VERSION_BUMP_FILE: ${{ env.VERSION_BUMP_FILE }}
+
+
+
+
+
+
 
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
