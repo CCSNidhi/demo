@@ -1,10 +1,10 @@
 name: .NET
 
-on: 
+on:
   push:
     branches:
       - main
- 
+
 jobs:
   build:
     runs-on: Windows-latest
@@ -23,34 +23,53 @@ jobs:
       - name: Install MAUI workload 
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-      
- 
-  auto-versioning:
-    name: Automatic Versioning
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      
-      - name: Run GitOps AutoVer Action
-        id: autover
-        uses: AlexAtkinson/github-action-gitops-autover@0.1.7
-      
-      - name: Display Version Outputs
+      - name: Install Versionize
+        run: dotnet tool install --global Versionize
+      - name: Setup git
         run: |
-          echo "New Version: ${{ steps.autover.outputs.new-version }}"
-          echo "Previous Version: ${{ steps.autover.outputs.previous-version }}"
-        
+         git config --local user.email "ntailorchambal@gmail.com"
+         git config --local user.name "CCSNidhi"
+      - name: Versionize Release
+        id: versionize
+        run: versionize --changelog-all --exit-insignificant-commits
+        continue-on-error: true
+      - name: No release required
+        if: steps.versionize.outcome != 'success'
+        run: echo "Skipping Release. No release required."
+  
+      - name: "Create release"
+        if: steps.versionize.outcome == 'success'
+        uses: "actions/github-script@v5"
+        with:
+         github-token: "${{ secrets.GIT_TOKEN }}"
+         script: |
+          try {
+            const tags_url = context.payload.repository.tags_url + "?per_page=1"
+            const result = await github.request(tags_url)
+            const current_tag = result.data[0].name
+            await github.rest.repos.createRelease({
+              draft: false,
+              generate_release_notes: true,
+              name: current_tag,
+              owner: context.repo.owner,
+              prerelease: false,
+              repo: context.repo.repo,
+              tag_name: current_tag,
+            });
+          } catch (error) {
+            core.setFailed(error.message);
+          }
+      
       - name: Build
         run: |
         
          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-         working-directory: ./MauiApp_version/MauiApp_version
+        working-directory: ./MauiApp_version/MauiApp_version
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
-          path: ./**/*.msix
+          path: ./**/*.msix 
 
 
 
