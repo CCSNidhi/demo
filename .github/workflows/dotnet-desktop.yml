@@ -23,8 +23,8 @@ jobs:
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
         env:
-           VERSION_FILE_NAME: 'VERSION'
-           VERSION_BUMP_FILE: 'version_fragment'
+         VERSION_FILE_NAME: 'VERSION'
+         VERSION_BUMP_FILE: 'version_fragment'
          
  
       - name: Checkout repository
@@ -35,12 +35,13 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         versionFragment=$(cat $VERSION_BUMP_FILE)
-         echo "'$versionFragment' version will be incremented"
-         echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
-         shell: bash
-         env:
-         VERSION_BUMP_FILE: ${{ env.VERSION_BUMP_FILE }}
+         $versionFragment = Get-Content $env:VERSION_BUMP_FILE
+         Write-Host "'$versionFragment' version will be incremented"
+         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
+        shell: pwsh
+        env:
+          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+          VERSION_BUMP_FILE: ${{ env.VERSION_BUMP_FILE }}
 
 
 
