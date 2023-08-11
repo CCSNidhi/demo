@@ -71,11 +71,20 @@ jobs:
       
            
      
-      
+      - name: Set updated version
+        run: |
+          updated_version="${VERSION_FRAGMENT}"
+          echo "Updated Version: $updated_version"
+        shell: bash
+
+      - name: Build
+        run: |
+          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=${updated_version}
+        working-directory: ./MauiApp_version/MauiApp_version
       - name: Build
         run: |
         
-          updated_version=$VERSION_FRAGMENT
+      
    
 
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$updated_version
