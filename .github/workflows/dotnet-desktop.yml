@@ -57,7 +57,9 @@ jobs:
         shell: pwsh
      
       - name: Create VERSION file
-        run: echo > VERSION
+        run: |
+    
+         $env:VERSION_FRAGMENT > VERSION
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
