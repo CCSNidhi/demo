@@ -66,7 +66,7 @@ jobs:
         uses: HardNorth/github-version-generate@v1.3.0
         with:
           version-source: file
-          version-file: ${{ env.VERSION }}
+          version-file: ${{ env.VERSION_FILE_NAME }}
           next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
           next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
           next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
