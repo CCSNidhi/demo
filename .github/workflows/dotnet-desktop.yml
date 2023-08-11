@@ -51,28 +51,20 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         $versionFragment = Get-Content -Raw MauiApp_version/VERSION.env
-         echo "::set-output name=VERSION::$versionFragment"
-         Write-Host "'$versionFragment' version will be incremented"
-         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
-        shell: pwsh
-        env:
-         DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+          read -r versionFragment < ${{ env.VERSION_BUMP_FILE }}
+          echo "'$versionFragment' version will be incremented"
+          echo "::set-env name=VERSION_FRAGMENT::${versionFragment}"
 
-      
-      - name: Debug VERSION.env content
-        run: |
-         cat MauiApp_version/VERSION.env
-      - name: Get version information from file
-        id: getVersion
-        run: |
-          versionFragment=$(cat MauiApp_version/VERSION.env)
-          echo "::set-output name=VERSION::$versionFragment"
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
-         version-source: semver
-         version: ${{ steps.getVersion.outputs.VERSION }}.0.0
+          version-source: file
+          version-file: ${{ env.VERSION_FILE_NAME }}
+          next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
+          next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
+          next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
+    
+      
            
      
       
