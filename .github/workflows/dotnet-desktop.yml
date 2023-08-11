@@ -38,7 +38,7 @@ jobs:
       - name: Get Current Version
         id: getVersion
         run: |
-          $version = [regex]::match((Get-Content -Raw YourProject.csproj), '(?<=<Version>).*?(?=<\/Version>)').Value
+          $version = [regex]::match((Get-Content -Raw MauiApp_version/MauiApp_version/MauiApp_version.csproj), '(?<=<Version>).*?(?=<\/Version>)').Value
           Write-Host "Current version: $version"
           echo "##vso[task.setvariable variable=version]$version"
 
