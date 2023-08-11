@@ -56,7 +56,8 @@ jobs:
          echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
      
-      
+      - name: Create VERSION file
+        run: echo > VERSION
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
@@ -73,11 +74,11 @@ jobs:
       
       - name: Build
         run: |
-         # Get the updated version from the environment
-         updated_version=$VERSION_FRAGMENT
-    
-           # Use the updated version in your build command
-         dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$updated_version
+        
+          updated_version=$VERSION_FRAGMENT
+   
+
+          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:Version=$updated_version
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
