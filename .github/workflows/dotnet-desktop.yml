@@ -31,17 +31,18 @@ jobs:
         uses: actions/checkout@v3
       - name: Debug Environment Variable
         run: |
+      - name: List Files in Directory
+        run: |
+         ls
          echo "VERSION_BUMP_FILE: $env:VERSION_BUMP_FILE"
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-          $versionFragment = Get-Content -Raw version_fragment
-          Write-Host "'$versionFragment' version will be incremented"
-          Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
+         cd path/to/directory
+         $versionFragment = Get-Content -Raw version_fragment
+         Write-Host "'$versionFragment' version will be incremented"
+         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
-        env:
-         DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
-
 
 
 
