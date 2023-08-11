@@ -54,8 +54,7 @@ jobs:
          echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
      
-      - name: Create VERSION file
-        run: echo "1.0.0" > VERSION
+     
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
