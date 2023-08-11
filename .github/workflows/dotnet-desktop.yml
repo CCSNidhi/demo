@@ -39,6 +39,7 @@ jobs:
         id: getVersionFragment
         run: |
           cd MauiApp_version
+          $versionFragment = Get-Content -Raw MauiApp_version/version_fragment.txt
           $versionFragment = Get-Content -Raw version_fragment
           Write-Host "'$versionFragment' version will be incremented"
           Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
