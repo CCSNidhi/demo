@@ -38,7 +38,7 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         cd path/to/directory
+         cd path/to/your/subdirectory
          $versionFragment = Get-Content -Raw version_fragment
          Write-Host "'$versionFragment' version will be incremented"
          Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
