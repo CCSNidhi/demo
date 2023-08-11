@@ -11,6 +11,8 @@ jobs:
     env:
          VERSION_FILE_NAME: 'VERSION'
          VERSION_BUMP_FILE: 'version_fragment'
+   
+         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
