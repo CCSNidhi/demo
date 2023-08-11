@@ -24,6 +24,7 @@
                 <OutputType>Exe</OutputType>
                 <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
                 <NuGetVersion>1.0.0</NuGetVersion>
+                <AssemblyVersion>${updated_version}</AssemblyVersion>
 		<ApplicationVersion>1</ApplicationVersion>
                 <NuGetVersion Condition="'$(NuGetVersion)' == ''">$env:new_version</NuGetVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
