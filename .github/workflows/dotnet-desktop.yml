@@ -38,11 +38,12 @@ jobs:
       - name: Get Current Version
         id: getVersion
         run: |
-         version=$(grep -oP '(?<=<Version>).*?(?=<\/Version>)' YourProject.csproj)
-         echo "::set-output name=version::$version"
+          $version = [regex]::match((Get-Content -Raw YourProject.csproj), '(?<=<Version>).*?(?=<\/Version>)').Value
+          Write-Host "Current version: $version"
+          echo "##vso[task.setvariable variable=version]$version"
 
       - name: Create VERSION file with Current Version
-        run: echo "${{ steps.getVersion.outputs.version }}" > ${{ env.VERSION_FILE_NAME }}
+        run: echo $env:version > $env:VERSION_FILE_NAME
       - name: Read version fragment from file
         id: getVersionFragment
         run: |
