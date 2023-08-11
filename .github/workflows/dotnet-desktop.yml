@@ -74,6 +74,12 @@ jobs:
           version-source: variable
           version-fragment-file: version_fragment
 
+      - name: Run Version Increment
+        uses: HardNorth/github-version-generate@v1.3.0
+        with:
+          version-source: variable
+          version-fragment-file: version_fragment
+
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
