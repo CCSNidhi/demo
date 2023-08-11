@@ -56,6 +56,24 @@ jobs:
      
       - name: Create VERSION file
         run: echo "1.0.0" > VERSION
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+        working-directory: ./MauiApp_version/MauiApp_version
+
+      - name: Set environment variables
+        run: |
+          echo "major" > version_fragment  # Replace with the desired version fragment
+        shell: bash
+
+      - name: Show version fragment
+        run: cat version_fragment
+
+      - name: Run Version Increment
+        uses: HardNorth/github-version-generate@v1.3.0
+        with:
+          version-source: variable
+          version-fragment-file: version_fragment
+
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
