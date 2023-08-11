@@ -38,10 +38,10 @@ jobs:
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
-         cd src
-         $versionFragment = Get-Content -Raw version_fragment
-         Write-Host "'$versionFragment' version will be incremented"
-         Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
+          cd MauiApp_version
+          $versionFragment = Get-Content -Raw version_fragment
+          Write-Host "'$versionFragment' version will be incremented"
+          Write-Host "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
 
 
