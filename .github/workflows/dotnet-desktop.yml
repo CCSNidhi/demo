@@ -62,11 +62,11 @@ jobs:
          $env:VERSION_FRAGMENT > VERSION
       - name: Validate version format
         run: |
-          current_version=$(cat $VERSION_FILE_NAME)
-          if [[ ! $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Invalid version format: $current_version"
+          $current_version = Get-Content -Raw $env:VERSION_FILE_NAME
+          if ($current_version -notmatch '^\d+\.\d+\.\d+$') {
+            Write-Host "Error: Invalid version format: $current_version"
             exit 1
-          fi
+          }
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
