@@ -47,7 +47,13 @@ jobs:
         env:
          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
 
+      - name: Set environment variables
+        run: |
+         echo "VERSION_FRAGMENT=$(cat .env)" >> $GITHUB_ENV
 
+      - name: Show version fragment
+        run: |
+         echo "Version fragment: $VERSION_FRAGMENT"
 
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
