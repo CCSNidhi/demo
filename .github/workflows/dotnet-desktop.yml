@@ -39,11 +39,13 @@ jobs:
         run: ls MauiApp_version
       - name: Set environment variables
         run: |
-         echo "VERSION_FRAGMENT=$(cat .env)" >> $GITHUB_ENV
+         echo "VERSION_FRAGMENT=$(cat MauiApp_version/VERSION.env)" >> $GITHUB_ENV
 
       - name: Show version fragment
         run: |
          echo "Version fragment: $VERSION_FRAGMENT"
+
+      
       - name: Get version fragment to bump
         id: getVersionFragment
         run: |
