@@ -1,7 +1,7 @@
 name: .NET
 
 on:
-  push: 
+  push:
     branches:
       - main
 
@@ -9,43 +9,33 @@ jobs:
   build:
     runs-on: Windows-latest
     env:
-         VERSION_FILE_NAME: 'VERSION'
-         VERSION_BUMP_FILE: 'version_fragment'
-   
-         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      VERSION_FILE_NAME: 'VERSION'
+      VERSION_BUMP_FILE: 'version_fragment'
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
 
-      - name: Install MAUI workload  
+      - name: Install MAUI workload
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
-        
-         
- 
+
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Debug Environment Variable
-        run: |
-      - name: List Files in Directory
-        run: |
-         ls
-         echo "VERSION_BUMP_FILE: $env:VERSION_BUMP_FILE"
-      - name: List MauiApp_version Directory Contents
-        run: ls MauiApp_version
+
       - name: Set environment variables
         run: |
-         echo "VERSION_FRAGMENT=$(cat MauiApp_version/VERSION.env)" >> $GITHUB_ENV
+          echo "VERSION_FRAGMENT=$(cat MauiApp_version/VERSION.env)" >> $GITHUB_ENV
+
       - name: Show version fragment
         run: |
-         echo "Version fragment: $VERSION_FRAGMENT"
-      
+          echo "Version fragment: $VERSION_FRAGMENT"
+
       - name: Read version fragment from file
         id: getVersionFragment
         run: |
@@ -57,29 +47,31 @@ jobs:
       - name: Create VERSION file
         run: echo "1.0.0" > $env:VERSION_FILE_NAME
 
-      - name: Generate versions
+      - name: Run Version Increment
         uses: HardNorth/github-version-generate@v1.3.0
-        with:
-          version-source: file
-          version-file: ${{ env.VERSION_FILE_NAME }}
-          next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
-          next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
-          next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
-    
-      
-           
-     
-      
-      - name: Build
+
+      - name: Update version in files
         run: |
-        
-         dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
+          # Replace "VERSION_FILE_NAME" with the actual path to the version file
+          echo "New version: ${{ env.GITHUB_VERSION }}" > ${{ env.VERSION_FILE_NAME }}
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Your Name"
+          git config --global user.email "your@email.com"
+          git commit -a -m "Version increment"
+          git push
+
+      - name: Build and Publish
+        run: |
+          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
         working-directory: ./MauiApp_version/MauiApp_version
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: maui-app-msix
-          path: ./**/*.msix  
+          path: ./**/*.msix
 
 
 
