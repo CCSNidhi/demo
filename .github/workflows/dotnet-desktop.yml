@@ -49,18 +49,18 @@ jobs:
       - name: Read version fragment from file
         id: getVersionFragment
         run: |
-         $versionFragment = Get-Content -Raw version_fragment
-         echo "Version fragment: $versionFragment"
-         echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
+          $versionFragment = Get-Content -Raw $env:VERSION_BUMP_FILE
+          echo "Version fragment: $versionFragment"
+          echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
         shell: pwsh
-     
+
       - name: Create VERSION file
-        run: echo "1.0.0" > VERSION
+        run: echo "1.0.0" > $env:VERSION_FILE_NAME
+
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
           version-source: file
-     
           version-file: ${{ env.VERSION_FILE_NAME }}
           next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
           next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
