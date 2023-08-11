@@ -48,12 +48,14 @@ jobs:
          echo "Version fragment: $VERSION_FRAGMENT"
 
       
-      - name: Get version fragment to bump
+      - name: Read version fragment from file
         id: getVersionFragment
         run: |
-          read -r versionFragment < ${{ env.VERSION_BUMP_FILE }}
-          echo "'$versionFragment' version will be incremented"
-          echo "::set-env name=VERSION_FRAGMENT::${versionFragment}"
+         $versionFragment = Get-Content -Raw version_fragment
+         echo "Version fragment: $versionFragment"
+         echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
+        shell: pwsh
+     
 
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
