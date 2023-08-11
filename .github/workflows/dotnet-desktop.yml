@@ -59,7 +59,9 @@ jobs:
          DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
 
       
-
+      - name: Debug VERSION.env content
+        run: |
+         cat MauiApp_version/VERSION.env
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
