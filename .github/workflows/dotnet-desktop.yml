@@ -73,7 +73,12 @@ jobs:
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
+      - name: Clear Build Cache
+        run: dotnet clean --configuration Release
+        working-directory: ./MauiApp_version/MauiApp_version
 
+      - name: Clear Artifact Cache
+        run: rm -rf ${{ github.workspace }}/**/bin/Release/
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
