@@ -48,16 +48,20 @@ jobs:
           fi
         shell: bash
 
+      - name: Create VERSION file with Current Version
+        run: echo "${{ steps.getVersion.outputs.version }}" > VERSION
+
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
+        id: getVersion
         with:
           version-source: file
-          version-file: ${{ env.VERSION_FILE_NAME }}
-          next-version-increment-patch: ${{ steps.determineBump.outputs.bump == 'patch' }}
-          next-version-increment-minor: ${{ steps.determineBump.outputs.bump == 'minor' }}
-          next-version-increment-major: ${{ steps.determineBump.outputs.bump == 'major' }}
+          version-file: VERSION  # Use the filename directly
+          next-version-increment-patch: ${{ env.bump == 'patch' }}
+          next-version-increment-minor: ${{ env.bump == 'minor' }}
+          next-version-increment-major: ${{ env.bump == 'major' }}
         env:
-          VERSION_BUMP_FILE: version_fragment
+          VERSION_BUMP_FILE: VERSION.env
       - name: Build
         run: |
         
