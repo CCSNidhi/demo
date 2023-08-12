@@ -17,12 +17,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
+      - name: Clean NuGet Cache
+        run: dotnet nuget locals all --clear
  
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
-
+      - name: Restore NuGet Packages
+        run: dotnet restore ./MauiApp_version/MauiApp_version/MauiApp_version.csproj
       - name: Install MAUI workload  
         run: dotnet workload install maui
         working-directory: ./MauiApp_version/MauiApp_version
@@ -73,9 +76,7 @@ jobs:
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
-      - name: Clear Build Cache
-        run: dotnet clean --configuration Release
-        working-directory: ./MauiApp_version/MauiApp_version
+     
 
       - name: Clear Artifact Cache
         run: rm -rf ${{ github.workspace }}/**/bin/Release/
@@ -86,7 +87,8 @@ jobs:
       - name: Fetch New Version
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
-          
+      - name: Clear Workspace
+        run: rm -rf ${{ github.workspace }}/*
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
