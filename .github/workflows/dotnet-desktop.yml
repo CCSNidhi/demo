@@ -81,9 +81,7 @@ jobs:
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Fetch New Version
         id: fetchNewVersion
-        run: |
-          newVersion=${{ steps.incrementVersion.outputs.new_version }}
-          echo "new_version=$newVersion" >> $GITHUB_ENV
+        run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
           
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
