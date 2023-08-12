@@ -84,6 +84,7 @@ jobs:
         run: |
           newVersion=${{ steps.incrementVersion.outputs.new_version }}
           echo "new_version=$newVersion" >> $GITHUB_ENV
+          
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
