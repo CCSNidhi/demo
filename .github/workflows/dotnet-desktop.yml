@@ -29,61 +29,45 @@ jobs:
         
          
  
-      - name: Get Last Commit Message
-        id: getCommitMessage
+      
+      - name: Check commit message and set version bump
         run: |
-         $lastCommitMessage = git log -1 --pretty=format:%B
-         echo "message=$lastCommitMessage" >> $env:GITHUB_ENV
-      - name: Determine Version Bump
-        id: determineBump
+         commitMessage=$(git log -1 --pretty=format:%B)
+         if [[ $commitMessage =~ patch ]]; then
+          echo "bump=patch" >> $GITHUB_ENV
+         elif [[ $commitMessage =~ minor ]]; then
+          echo "bump=minor" >> $GITHUB_ENV
+         elif [[ $commitMessage =~ major ]]; then
+          echo "bump=major" >> $GITHUB_ENV
+         else
+           echo "bump=none" >> $GITHUB_ENV
+      - name: Set current version in the VERSION file
+        run: echo "1.0.0.1" > VERSION
+      - name: Generate new version and update VERSION file
         run: |
-          commitMessage=${{ env.message }}
-          if [[ $commitMessage =~ patch ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ minor ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ major ]]; then
-            echo "bump=major" >> $GITHUB_ENV
-          else
-            echo "bump=none" >> $GITHUB_ENV
-          fi
-        shell: bash
-
-      - name: Read Current Version from File
-        id: getVersionFromFile
-        run: echo "::set-output name=current_version::$(head -n 1 VERSION)"
-
-      - name: Increment Version
-        id: incrementVersion
-        run: |
-          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
-          bumpType=${{ env.bump }}
-          
-          if [[ $bumpType == 'patch' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$4 = $4 + 1; print}' OFS=. )
-          elif [[ $bumpType == 'minor' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; $4 = 0; print}' OFS=. )
-          elif [[ $bumpType == 'major' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; $4 = 0; print}' OFS=. )
-          else
-            newVersion=$currentVersion
-          fi
-          echo "new_version=$newVersion" >> $GITHUB_ENV
-        shell: bash
-      - name: Update VERSION File with New Version
-        run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
+         bump=$bump
+         if [[ $bump == "patch" ]]; then
+          newVersion=$(semver bump patch $(cat VERSION))
+         elif [[ $bump == "minor" ]]; then
+          newVersion=$(semver bump minor $(cat VERSION))
+         elif [[ $bump == "major" ]]; then
+          newVersion=$(semver bump major $(cat VERSION))
+         else
+          newVersion=$(cat VERSION)
+         fi
+         echo $newVersion > VERSION
+         echo "newVersion=$newVersion" >> $GITHUB_ENV
       - name: Build the project
-        run: 
-           dotnet build MauiApp_version/MauiApp_version/MauiApp_version.csproj --configuration Release
-           dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true dotnet build MauiApp_version/MauiApp_version.csproj -c Release
-        
-     
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-         name: maui-app-msix
-         path: |
-          demo/MauiApp_version/MauiApp_version/bin/Release/
+        run: dotnet build MauiApp_version/MauiApp_version/MauiApp_version.csproj --configuration Release
+      - name: Publish the project
+        run: dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -f net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true
+      - name: Build again (if needed)
+        run: dotnet build MauiApp_version/MauiApp_version/MauiApp_version.csproj --configuration Release
+
+
+
+
+
 
 
 
