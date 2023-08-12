@@ -32,8 +32,8 @@ jobs:
       - name: Get Last Commit Message
         id: getCommitMessage
         run: |
-          lastCommitMessage=$(git log -1 --pretty=format:%B)
-          echo "message=$lastCommitMessage" >> $GITHUB_ENV
+         $lastCommitMessage = git log -1 --pretty=format:%B
+         echo "message=$lastCommitMessage" >> $env:GITHUB_ENV
 
       - name: Determine Version Bump
         id: determineBump
