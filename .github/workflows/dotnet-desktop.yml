@@ -29,39 +29,35 @@ jobs:
         
          
  
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Debug Environment Variable
-        run: |
+      - name: Get Commit Message
+        id: getCommitMessage
+        run: echo "::set-output name=message::$(git log --format=%B -n 1 $GITHUB_SHA)"
 
-
-      - name: Get Current Version
-        id: getVersion
+      - name: Determine Version Bump
+        id: determineBump
         run: |
-          $version = [regex]::match((Get-Content -Raw MauiApp_version/MauiApp_version/MauiApp_version.csproj), '(?<=<Version>).*?(?=<\/Version>)').Value
-          Write-Host "Current version: $version"
-          echo "##vso[task.setvariable variable=version]$version"
+          commitMessage=${{ steps.getCommitMessage.outputs.message }}
+          if [[ $commitMessage =~ major ]]; then
+            echo "::set-output name=bump::major"
+          elif [[ $commitMessage =~ minor ]]; then
+            echo "::set-output name=bump::minor"
+          elif [[ $commitMessage =~ patch ]]; then
+            echo "::set-output name=bump::patch"
+          else
+            echo "::set-output name=bump::none"
+          fi
+        shell: bash
 
-      - name: Create VERSION file with Current Version
-        run: echo $env:version > $env:VERSION_FILE_NAME
-      - name: Read version fragment from file
-        id: getVersionFragment
-        run: |
-         $versionFragment = Get-Content -Raw version_fragment
-         echo "Version fragment: $versionFragment"
-         echo "::set-env name=VERSION_FRAGMENT::$versionFragment"
-        shell: pwsh
-     
-     
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         with:
           version-source: file
-     
           version-file: ${{ env.VERSION_FILE_NAME }}
-          next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
-          next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
-          next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
+          next-version-increment-patch: ${{ steps.determineBump.outputs.bump == 'patch' }}
+          next-version-increment-minor: ${{ steps.determineBump.outputs.bump == 'minor' }}
+          next-version-increment-major: ${{ steps.determineBump.outputs.bump == 'major' }}
+        env:
+          VERSION_BUMP_FILE: version_fragment
       - name: Build
         run: |
         
