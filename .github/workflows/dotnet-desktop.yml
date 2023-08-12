@@ -50,7 +50,8 @@ jobs:
 
       - name: Create VERSION file with Current Version
         run: echo "${{ steps.getVersion.outputs.version }}" > VERSION
-
+      - name: Print VERSION File
+        run: cat VERSION
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.3.0
         id: getVersion
