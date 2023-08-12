@@ -54,7 +54,7 @@ jobs:
         id: getVersion
         with:
           version-source: file
-          version-file:VERSION  # Use the filename directly
+          version-file: VERSION        # Use the filename directly
           next-version-increment-patch: ${{ env.bump == 'patch' }}
           next-version-increment-minor: ${{ env.bump == 'minor' }}
           next-version-increment-major: ${{ env.bump == 'major' }}
