@@ -1,4 +1,3 @@
-Copy code
 name: Build and Release
 
 on:
@@ -40,7 +39,11 @@ jobs:
         echo $newVersion > VERSION
         echo "newVersion=$newVersion" >> $GITHUB_ENV
     - name: Build the project
-      run: dotnet build MauiApp_version/MauiApp_version.csproj -c Release
+      run: 
+       dotnet build MauiApp_version/MauiApp_version.csproj -c Release
+    - name: Build
+      run: |
+        dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v2
       with:
