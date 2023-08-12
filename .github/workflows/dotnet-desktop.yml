@@ -77,7 +77,7 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build MauiApp_version.csproj.csproj -c Release
+          dotnet build MauiApp_version.csproj -c Release
         working-directory: ./MauiApp_version/MauiApp_version
       - name: Fetch New Version
         id: fetchNewVersion
