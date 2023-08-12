@@ -36,16 +36,16 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-          commitMessage=${{ steps.getCommitMessage.outputs.message }}
-          if [[ $commitMessage =~ major ]]; then
-            echo "::set-output name=bump::major"
-          elif [[ $commitMessage =~ minor ]]; then
-            echo "::set-output name=bump::minor"
-          elif [[ $commitMessage =~ patch ]]; then
-            echo "::set-output name=bump::patch"
-          else
-            echo "::set-output name=bump::none"
-          fi
+           commitMessage=${{ env.message }}
+           if [[ $commitMessage =~ patch ]]; then
+           echo "bump=patch" >> $GITHUB_ENV
+           elif [[ $commitMessage =~ minor ]]; then
+           echo "bump=minor" >> $GITHUB_ENV
+           elif [[ $commitMessage =~ major ]]; then
+           echo "bump=major" >> $GITHUB_ENV
+           else
+           echo "bump=none" >> $GITHUB_ENV
+           fi
         shell: bash
 
      
