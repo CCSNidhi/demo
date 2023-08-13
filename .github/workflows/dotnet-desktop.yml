@@ -37,39 +37,39 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-          commitMessage=${{ env.message }}
-          if [[ $commitMessage =~ patch ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ minor ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ major ]]; then
-            echo "bump=major" >> $GITHUB_ENV
-          else
-            echo "bump=none" >> $GITHUB_ENV
-          fi
+         commitMessage=${{ env.message }}
+         if [[ $commitMessage =~ patch ]]; then
+         echo "bump=patch" >> $GITHUB_ENV
+         elif [[ $commitMessage =~ minor ]]; then
+         echo "bump=minor" >> $GITHUB_ENV
+         elif [[ $commitMessage =~ major ]]; then
+         echo "bump=major" >> $GITHUB_ENV
+         else
+         echo "bump=none" >> $GITHUB_ENV
+         fi
         shell: bash
 
-      - name: Read Current Version from File
-        id: getVersionFromFile
-        run: echo "::set-output name=current_version::$(head -n 1 VERSION)"
 
-      - name: Increment Version
-        id: incrementVersion
+
+      - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
-          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
-          bumpType=${{ env.bump }}
-          
-          if [[ $bumpType == 'patch' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
-          elif [[ $bumpType == 'minor' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
-          elif [[ $bumpType == 'major' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
-          else
-            newVersion=$currentVersion
-          fi
-          echo "::set-output name=new_version::$newVersion"
-        shell: bash
+         bumpType=${{ env.bump }}
+         currentVersion=$(head -n 1 VERSION)
+    
+         if [[ $bumpType == 'patch' ]]; then
+         newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+         elif [[ $bumpType == 'minor' ]]; then
+         newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
+         elif [[ $bumpType == 'major' ]]; then
+         newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
+         else
+         newVersion=$currentVersion
+         fi
+    
+   
+         sed -i "s/\[assembly: System.Reflection.AssemblyFileVersionAttribute(\"[^\"]*\")\]/[assembly: System.Reflection.AssemblyFileVersionAttribute(\"$newVersion\")]/" YourAssemblyInfo.cs
+         sed -i "s/\[assembly: System.Reflection.AssemblyInformationalVersionAttribute(\"[^\"]*\")\]/[assembly: System.Reflection.AssemblyInformationalVersionAttribute(\"$newVersion\")]/" YourAssemblyInfo.cs
+         shell: bash
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
