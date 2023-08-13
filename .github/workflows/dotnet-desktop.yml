@@ -53,23 +53,40 @@ jobs:
 
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
-         bumpType=${{ env.bump }}
-         currentVersion=$(head -n 1 VERSION)
+         $bumpType = $env:bump
+         $currentVersion = Get-Content -Path VERSION -First 1
     
-         if [[ $bumpType == 'patch' ]]; then
-         newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
-         elif [[ $bumpType == 'minor' ]]; then
-         newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
-         elif [[ $bumpType == 'major' ]]; then
-         newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
-         else
-         newVersion=$currentVersion
-         fi
+         if ($bumpType -eq 'patch') {
+         $newVersion = ($currentVersion -split '\.') | ForEach-Object { $_ } -join '.'
+         $newVersion[-1] = [int]$newVersion[-1] + 1
+         }
+         elseif ($bumpType -eq 'minor') {
+         $newVersion = ($currentVersion -split '\.') | ForEach-Object { $_ } -join '.'
+         $newVersion[1] = [int]$newVersion[1] + 1
+         $newVersion[-1] = 0
+         }
+         elseif ($bumpType -eq 'major') {
+         $newVersion = ($currentVersion -split '\.') | ForEach-Object { $_ } -join '.'
+         $newVersion[0] = [int]$newVersion[0] + 1
+         $newVersion[1] = 0
+         $newVersion[-1] = 0
+         }
+         else {
+         $newVersion = $currentVersion
+         }
     
-   
-         sed -i "s/\[assembly: System.Reflection.AssemblyFileVersionAttribute(\"[^\"]*\")\]/[assembly: System.Reflection.AssemblyFileVersionAttribute(\"$newVersion\")]/" YourAssemblyInfo.cs
-         sed -i "s/\[assembly: System.Reflection.AssemblyInformationalVersionAttribute(\"[^\"]*\")\]/[assembly: System.Reflection.AssemblyInformationalVersionAttribute(\"$newVersion\")]/" YourAssemblyInfo.cs
-         shell: bash
+  
+         $assemblyInfoPath = Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | Select-Object -ExpandProperty FullName -First 1
+    
+         if ($assemblyInfoPath) {
+         # Replace the assembly version attributes in the AssemblyInfo.cs file
+         (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyFileVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyFileVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
+         (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyInformationalVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyInformationalVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
+         }
+         else {
+         Write-Host "AssemblyInfo.cs file not found."
+         }
+         shell: powershell
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
