@@ -74,19 +74,25 @@ jobs:
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
 
-      - name: Build
-        run: |
-          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-        working-directory: ./MauiApp_version/MauiApp_version
+      
+        
       - name: Fetch New Version
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
-          
+      - name: Build and Package
+        run: |
+         dotnet build MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release
+         dotnet publish MauiApp_version/MauiApp_version/MauiApp_version.csproj -c Release -r win-x64
+  
+      - name: Create MSIX Package
+        run: msixmgr pack -o OutputDirectory -d DistributionDirectory -p MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test
+        working-directory: .
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
          name: maui-app-msix-${{ env.NEW_VERSION }}
          path: ./**/*.msix
+         working-directory: ./MauiApp_version/MauiApp_version
 
 
 
