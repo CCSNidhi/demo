@@ -78,11 +78,11 @@ jobs:
           $newVersion = $currentVersion
           }
     
-         # Find AssemblyInfo.cs file
+        
          $assemblyInfoPath = Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | Select-Object -ExpandProperty FullName -First 1
     
          if ($assemblyInfoPath) {
-        # Replace the assembly version attributes in the AssemblyInfo.cs file
+      
         (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyFileVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyFileVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
         (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyInformationalVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyInformationalVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
         }
