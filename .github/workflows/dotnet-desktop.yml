@@ -58,18 +58,18 @@ jobs:
     
          if ($bumpType -eq 'patch') {
          $newVersionParts = $currentVersion -split '\.'
-         [int]$newVersionParts[-1]++
+         $newVersionParts[-1] = [int]$newVersionParts[-1] + 1
          $newVersion = $newVersionParts -join '.'
          }
          elseif ($bumpType -eq 'minor') {
          $newVersionParts = $currentVersion -split '\.'
-         [int]$newVersionParts[1]++
+         $newVersionParts[1] = [int]$newVersionParts[1] + 1
          $newVersionParts[-1] = 0
          $newVersion = $newVersionParts -join '.'
          }
          elseif ($bumpType -eq 'major') {
          $newVersionParts = $currentVersion -split '\.'
-         [int]$newVersionParts[0]++
+         $newVersionParts[0] = [int]$newVersionParts[0] + 1
          $newVersionParts[1] = 0
          $newVersionParts[-1] = 0
          $newVersion = $newVersionParts -join '.'
