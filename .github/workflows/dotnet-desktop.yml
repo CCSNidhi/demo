@@ -57,39 +57,40 @@ jobs:
          $currentVersion = Get-Content -Path VERSION -First 1
     
          if ($bumpType -eq 'patch') {
-          $newVersionParts = $currentVersion -split '\.'
-          [int]$newVersionParts[-1]++
-          $newVersion = $newVersionParts -join '.'
-          }
-          elseif ($bumpType -eq 'minor') {
-          $newVersionParts = $currentVersion -split '\.'
-          [int]$newVersionParts[1]++
-          $newVersionParts[-1] = 0
-          $newVersion = $newVersionParts -join '.'
-          }
-          elseif ($bumpType -eq 'major') {
-          $newVersionParts = $currentVersion -split '\.'
-          [int]$newVersionParts[0]++
-          $newVersionParts[1] = 0
-          $newVersionParts[-1] = 0
-          $newVersion = $newVersionParts -join '.'
-          }
-          else {
-          $newVersion = $currentVersion
-          }
+         $newVersionParts = $currentVersion -split '\.'
+         [int]$newVersionParts[-1]++
+         $newVersion = $newVersionParts -join '.'
+         }
+         elseif ($bumpType -eq 'minor') {
+         $newVersionParts = $currentVersion -split '\.'
+         [int]$newVersionParts[1]++
+         $newVersionParts[-1] = 0
+         $newVersion = $newVersionParts -join '.'
+         }
+         elseif ($bumpType -eq 'major') {
+         $newVersionParts = $currentVersion -split '\.'
+         [int]$newVersionParts[0]++
+         $newVersionParts[1] = 0
+         $newVersionParts[-1] = 0
+         $newVersion = $newVersionParts -join '.'
+         }
+         else {
+         $newVersion = $currentVersion
+         }
     
-        
+         # Find AssemblyInfo.cs file
          $assemblyInfoPath = Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | Select-Object -ExpandProperty FullName -First 1
     
          if ($assemblyInfoPath) {
-      
-        (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyFileVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyFileVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
-        (Get-Content -Path $assemblyInfoPath) -replace '\[assembly: System.Reflection.AssemblyInformationalVersionAttribute\("[^"]*"\)\]', "[assembly: System.Reflection.AssemblyInformationalVersionAttribute(`"$newVersion`")]" | Set-Content -Path $assemblyInfoPath
-        }
-        else {
-        Write-Host "AssemblyInfo.cs file not found."
-        }
-        shell: powershell
+         # Replace the assembly version attributes in the AssemblyInfo.cs file
+         (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyFileVersionAttribute\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
+         (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyInformationalVersionAttribute\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
+         }
+         else {
+         Write-Host "AssemblyInfo.cs file not found."
+         }
+
+         shell: powershell
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
 
