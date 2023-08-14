@@ -93,7 +93,11 @@ jobs:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
+      - name: Configure Git
+        run: |
+          git config --global user.name 'CCSNidhi'
+          git config --global user.email 'ntailorchambal@gmail.com'
+          git config --global credential.helper store
       - name: Commit and Push Version Update
         run: |
          git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
@@ -102,13 +106,13 @@ jobs:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
       
       - name: Build Application
-        run: dotnet build YourApp.sln --configuration Release
+        run: dotnet build MauiApp_version.sln --configuration Release
         
       - name: Publish MSIX Package
         run: |
-          dotnet publish YourApp.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
+          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
           # You might need to adjust the path to your published files
-          msixgen build -p YourApp/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
+          msixgen build -p MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
       
       - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
