@@ -83,38 +83,9 @@ jobs:
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
-      - name: Update AssemblyVersion and AssemblyFileVersion
+      - name: Clear Version in csproj file
         run: |
-         bumpType="${{ env.bump }}"
-         currentVersion=$(head -n 1 ${{ env.VERSION_FILE_NAME }})
-
-         IFS='.' read -ra versionParts <<< "$currentVersion"
-         newMajor=${versionParts[0]}
-         newMinor=${versionParts[1]}
-         newPatch=${versionParts[2]}
-         newRevision=${versionParts[3]}
-
-         if [ "$bumpType" == "major" ]; then
-          newMajor=$((newMajor + 1))
-          newMinor=0
-          newPatch=0
-          newRevision=0
-         elif [ "$bumpType" == "minor" ]; then
-          newMinor=$((newMinor + 1))
-          newPatch=0
-          newRevision=0
-         elif [ "$bumpType" == "patch" ]; then
-          newPatch=$((newPatch + 1))
-          newRevision=0
-         elif [ "$bumpType" == "revision" ]; then
-          newRevision=$((newRevision + 1))
-         fi
-
-         newVersion="$newMajor.$newMinor.$newPatch.$newRevision"
-
-         # Find and update AssemblyInfo.cs files
-         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyVersion\(\")([^\"]+)/\1$newVersion/g" {} +
-         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyFileVersion\(\")([^\"]+)/\1$newVersion/g" {} +
+         sed -i "s#<Version>[0-9.]*</Version>#<Version></Version>#" MauiApp_version.csproj
         shell: bash
       - name: Update Version in csproj
         run: |
