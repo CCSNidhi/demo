@@ -91,30 +91,32 @@ jobs:
           $newMinor = [int]$versionParts[1]
           $newPatch = [int]$versionParts[2]
           $newRevision = [int]$versionParts[3]
-          
           if ($bumpType -eq 'major') {
             $newMajor += 1
-          }
-          elseif ($bumpType -eq 'minor') {
+           }
+           elseif ($bumpType -eq 'minor') {
             $newMinor += 1
-          }
-          elseif ($bumpType -eq 'patch') {
+            $newPatch = 0  # Reset patch version when bumping minor
+            $newRevision = 0  # Reset revision version when bumping minor
+           }
+           elseif ($bumpType -eq 'patch') {
             $newPatch += 1
-          }
-          elseif ($bumpType -eq 'revision') {
-            $newRevision += 1
-          }
+            $newRevision = 0  # Reset revision version when bumping patch
+           }
+           elseif ($bumpType -eq 'revision') {
+             $newRevision += 1
+           }
 
-          $newVersion = "$newMajor.$newMinor.$newPatch.$newRevision"
+             $newVersion = "$newMajor.$newMinor.$newPatch.$newRevision"
 
-          # Find and update AssemblyInfo.cs files
-          Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | ForEach-Object {
+            # Find and update AssemblyInfo.cs files
+            Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | ForEach-Object {
             $assemblyInfoPath = $_.FullName
             Write-Host "Updating version in $($assemblyInfoPath)"
             (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
             (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyFileVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
-          }
-
+           }
+           shell: pwsh
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
