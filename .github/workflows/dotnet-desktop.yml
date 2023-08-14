@@ -121,7 +121,7 @@ jobs:
       - name: Update Version in AppManifest.xml
         run: |
          $newVersion = Get-Content -Path VERSION
-         $appManifestPath = "MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest.xml"
+         $appManifestPath = "D:\a\demo\demo\MauiApp_version\MauiApp_version\Platforms\Windows\Package.appxmanifest.xml"
          $appManifestContent = Get-Content -Path $appManifestPath
          $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
          $updatedAppManifestContent | Set-Content -Path $appManifestPath
