@@ -84,10 +84,10 @@ jobs:
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Update Version in Files
         run: |
-          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
-          find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
-          find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
-          echo "$newVersion" > VERSION
+         newVersion="${{ steps.incrementVersion.outputs.new_version }}"
+         find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
+         find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
+         echo "$newVersion" > VERSION
       
       - name: Build Application
         run: dotnet build YourApp.sln --configuration Release
