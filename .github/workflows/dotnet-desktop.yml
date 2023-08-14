@@ -85,9 +85,21 @@ jobs:
       - name: Update Version in Files
         run: |
          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
-         find . -name '*.csproj' -exec sed -i 's#<Version>[^<]*</Version>#<Version>'"$newVersion"'</Version>#' {} +
-         find . -name 'Package.appxmanifest' -exec sed -i 's#Version="[0-9.]*"#Version="'"$newVersion"'"#' {} +
+         find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
+         find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
          echo "$newVersion" > VERSION
+        shell: pwsh
+        env:
+         VERSION_FILE_NAME: VERSION
+         VERSION_BUMP_FILE: version_fragment
+         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+      - name: Commit and Push Version Update
+        run: |
+         git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
+         git push origin main
+        env:
+         PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
       
       - name: Build Application
         run: dotnet build YourApp.sln --configuration Release
