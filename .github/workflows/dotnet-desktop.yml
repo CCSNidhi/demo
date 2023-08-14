@@ -75,9 +75,9 @@ jobs:
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
-          $bumpType = $env:bump
-          $currentVersion = Get-Content -Path VERSION -First 1
-
+          $bumpType = ${{ env.bump }}
+          $currentVersion = Get-Content -Path ${{ env.VERSION_FILE_NAME }} -First 1
+          
           if ($bumpType -eq 'patch') {
             $newVersionParts = $currentVersion -split '\.'
             $newVersionParts[-1] = [int]$newVersionParts[-1] + 1
@@ -99,19 +99,14 @@ jobs:
           else {
             $newVersion = $currentVersion
           }
-          
-          # Find AssemblyInfo.cs file
-          $assemblyInfoPath = Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | Select-Object -ExpandProperty FullName -First 1
-          
-          if ($assemblyInfoPath) {
-            # Replace the assembly version attributes in the AssemblyInfo.cs file
-            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyFileVersionAttribute\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
-            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyInformationalVersionAttribute\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
+
+          # Find and update AssemblyInfo.cs files
+          Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | ForEach-Object {
+            $assemblyInfoPath = $_.FullName
+            Write-Host "Updating version in $($assemblyInfoPath)"
+            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
+            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyFileVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
           }
-          else {
-            Write-Host "AssemblyInfo.cs file not found."
-          }
-          shell: powershell
 
       - name: Build
         run: |
