@@ -21,7 +21,7 @@
 		<!-- Versions -->
              
                 <Version>$env:new_version</Version>
-                <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+                <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
                 <OutputType>Exe</OutputType>
                 <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
                
