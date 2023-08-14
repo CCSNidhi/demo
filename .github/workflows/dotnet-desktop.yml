@@ -105,8 +105,8 @@ jobs:
         env:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
       - name: Build Application
-        run: dotnet build MauiApp_version.sln --configuration Release
-        working-directory: ./MauiApp_version/MauiApp_version
+        run: dotnet build MauiApp_version/MauiApp_version.sln --configuration Release
+        
      
       - name: Build and Generate MSIX Package
         run: |
