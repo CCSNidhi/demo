@@ -114,8 +114,8 @@ jobs:
       - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: msix-artifact
-          path: msix-package.msix
+         name: msix-artifact
+         path: path/to/msix-package.msix
       
 
 
