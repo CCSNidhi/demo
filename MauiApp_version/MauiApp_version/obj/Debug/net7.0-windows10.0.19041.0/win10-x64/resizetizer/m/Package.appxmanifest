@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap rescap">
-  <Identity Name="b5149a34-ebc0-487e-83e9-f93773f39d3b" Publisher="CN=User Name" Version="2.0.0.0" />
+  <Identity Name="b5149a34-ebc0-487e-83e9-f93773f39d3b" Publisher="CN=User Name" Version="3.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="9CD277F7-CA6D-4253-BAB2-A88F746674BF" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>MauiApp_version</DisplayName>
@@ -8,8 +8,8 @@
     <Logo>appiconStoreLogo.png</Logo>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="2.0.0.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="2.0.0.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="3.0.0.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="3.0.0.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
   <Resources>
     <Resource Language="x-generate" />
