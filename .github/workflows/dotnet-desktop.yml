@@ -85,6 +85,7 @@ jobs:
 
       - name: Clear Version in csproj file
         run: |
+         cd ./MauiApp_version/MauiApp_version
          sed -i "s#<Version>[0-9.]*</Version>#<Version></Version>#" MauiApp_version.csproj
         shell: bash
       - name: Update Version in csproj
