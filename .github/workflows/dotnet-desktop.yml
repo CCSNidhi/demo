@@ -83,40 +83,37 @@ jobs:
 
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
-          $bumpType = ${{ env.bump }}
-          $currentVersion = Get-Content -Path ${{ env.VERSION_FILE_NAME }} -First 1
+         bumpType="${{ env.bump }}"
+         currentVersion=$(head -n 1 ${{ env.VERSION_FILE_NAME }})
 
-          $versionParts = $currentVersion -split '\.'
-          $newMajor = [int]$versionParts[0]
-          $newMinor = [int]$versionParts[1]
-          $newPatch = [int]$versionParts[2]
-          $newRevision = [int]$versionParts[3]
-          if ($bumpType -eq 'major') {
-            $newMajor += 1
-           }
-           elseif ($bumpType -eq 'minor') {
-            $newMinor += 1
-            $newPatch = 0  # Reset patch version when bumping minor
-            $newRevision = 0  # Reset revision version when bumping minor
-           }
-           elseif ($bumpType -eq 'patch') {
-            $newPatch += 1
-            $newRevision = 0  # Reset revision version when bumping patch
-           }
-           elseif ($bumpType -eq 'revision') {
-             $newRevision += 1
-           }
+          IFS='.' read -ra versionParts <<< "$currentVersion"
+          newMajor=${versionParts[0]}
+          newMinor=${versionParts[1]}
+          newPatch=${versionParts[2]}
+          newRevision=${versionParts[3]}
+    
+         if [[ $bumpType == 'major' ]]; then
+           newMajor=$((newMajor + 1))
+           newMinor=0
+           newPatch=0
+           newRevision=0
+         elif [[ $bumpType == 'minor' ]]; then
+            newMinor=$((newMinor + 1))
+            newPatch=0
+            newRevision=0
+          elif [[ $bumpType == 'patch' ]]; then
+            newPatch=$((newPatch + 1))
+            newRevision=0
+          elif [[ $bumpType == 'revision' ]]; then
+          newRevision=$((newRevision + 1))
+          fi
 
-             $newVersion = "$newMajor.$newMinor.$newPatch.$newRevision"
+          newVersion="$newMajor.$newMinor.$newPatch.$newRevision"
 
-            # Find and update AssemblyInfo.cs files
-            Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | ForEach-Object {
-            $assemblyInfoPath = $_.FullName
-            Write-Host "Updating version in $($assemblyInfoPath)"
-            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
-            (Get-Content -Path $assemblyInfoPath) -replace '(?<=AssemblyFileVersion\(")[^"]*', $newVersion | Set-Content -Path $assemblyInfoPath
-           }
-           shell: pwsh
+          # Find and update AssemblyInfo.cs files
+         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyVersion\(\")([^\"]+)/\1$newVersion/g" {} +
+         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyFileVersion\(\")([^\"]+)/\1$newVersion/g" {} +
+        shell: bash
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
