@@ -39,25 +39,19 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-         $commitMessage = $env:message
-          $bumpType = "none"
-    
-         if ($commitMessage -match "patch") {
-           $bumpType = "patch"
-         }
-         elseif ($commitMessage -match "minor") {
-           $bumpType = "minor"
-         }
-         elseif ($commitMessage -match "major") {
-           $bumpType = "major"
-         }
-         elseif ($commitMessage -match "revision") {
-           $bumpType = "revision"
-         }
-    
-           Write-Host "bump=$bumpType"
-          echo "bump=$bumpType" >> $env:GITHUB_ENV
-          shell: pwsh
+          commitMessage=${{ env.message }}
+          if [[ $commitMessage =~ patch ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ minor ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ major ]]; then
+            echo "bump=major" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ revision ]]; then
+            echo "bump=revision" >> $GITHUB_ENV
+          else
+            echo "bump=none" >> $GITHUB_ENV
+          fi
+        shell: bash
 
       - name: Read Current Version from File
         id: getVersionFromFile
