@@ -118,38 +118,14 @@ jobs:
          $csprojContent | Set-Content -Path $csprojPath -Force
         shell: pwsh
       
-      - name: Update AssemblyVersion and AssemblyFileVersion
+      - name: Update Version in AppManifest.xml
         run: |
-         bumpType="${{ env.bump }}"
-         currentVersion=$(head -n 1 ${{ env.VERSION_FILE_NAME }})
-          IFS='.' read -ra versionParts <<< "$currentVersion"
-          newMajor=${versionParts[0]}
-          newMinor=${versionParts[1]}
-          newPatch=${versionParts[2]}
-          newRevision=${versionParts[3]}
-    
-         if [[ $bumpType == 'major' ]]; then
-           newMajor=$((newMajor + 1))
-           newMinor=0
-           newPatch=0
-           newRevision=0
-         elif [[ $bumpType == 'minor' ]]; then
-            newMinor=$((newMinor + 1))
-            newPatch=0
-            newRevision=0
-          elif [[ $bumpType == 'patch' ]]; then
-            newPatch=$((newPatch + 1))
-            newRevision=0
-          elif [[ $bumpType == 'revision' ]]; then
-          newRevision=$((newRevision + 1))
-          fi
-
-          newVersion="$newMajor.$newMinor.$newPatch.$newRevision"
-
-          # Find and update AssemblyInfo.cs files
-         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyVersion\(\")([^\"]+)/\1$newVersion/g" {} +
-         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyFileVersion\(\")([^\"]+)/\1$newVersion/g" {} +
-        shell: bash
+          $newVersion = Get-Content -Path VERSION
+          $appManifestPath = "$env:GITHUB_WORKSPACE/MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
+          $appManifestContent = Get-Content -Path $appManifestPath
+          $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
+          $updatedAppManifestContent | Set-Content -Path $appManifestPath
+        shell: pwsh
         
       - name: Build
         run: |
