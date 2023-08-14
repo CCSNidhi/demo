@@ -80,17 +80,11 @@ jobs:
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > ${{ env.VERSION_FILE_NAME }}
-      - name: Update .csproj File with New Version
-        run: |
-          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
-          csprojFilePath="./MauiApp_version/MauiApp_version/MauiApp_version.csproj"
-          sed -i "s#<Version>.*<\/Version>#<Version>$newVersion<\/Version>#g" $csprojFilePath
-        shell: bash
+
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
          bumpType="${{ env.bump }}"
          currentVersion=$(head -n 1 ${{ env.VERSION_FILE_NAME }})
-
           IFS='.' read -ra versionParts <<< "$currentVersion"
           newMajor=${versionParts[0]}
           newMinor=${versionParts[1]}
@@ -132,6 +126,7 @@ jobs:
         with:
          name: maui-app-msix-${{ env.NEW_VERSION }}
          path: ./**/*.msix
+
 
 
 
