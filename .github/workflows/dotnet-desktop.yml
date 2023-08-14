@@ -140,6 +140,13 @@ jobs:
       - name: Fetch New Version
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
+      
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+         name: maui-app-msix-${{ env.NEW_VERSION }}
+         path: ./**/*.msix
+
       - name: Update Version in AppxManifest.xml
         run: |
          $newVersion = Get-Content -Path VERSION
@@ -148,13 +155,6 @@ jobs:
          $updatedAppxManifestContent = $appxManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
          $updatedAppxManifestContent | Set-Content -Path $appxManifestPath
         shell: pwsh
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-         name: maui-app-msix-${{ env.NEW_VERSION }}
-         path: ./**/*.msix
-
-
 
 
 
