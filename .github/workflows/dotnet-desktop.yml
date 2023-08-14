@@ -84,7 +84,7 @@ jobs:
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Update Version in csproj
         run: |
-          $csprojPath = 'Path/To/Your/Project.csproj'
+          $csprojPath = 'MauiApp_version/MauiApp_version/MauiApp_version.csproj'
           $newVersion = ${{ steps.incrementVersion.outputs.new_version }}
           $csprojContent = Get-Content -Path $csprojPath
           $csprojContent = $csprojContent -replace '<Version>[^<]*</Version>', "<Version>$newVersion</Version>"
