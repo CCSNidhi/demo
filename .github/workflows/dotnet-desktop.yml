@@ -82,7 +82,21 @@ jobs:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      - name: Update Version in csproj
+        run: |
+          $csprojPath = 'Path/To/Your/Project.csproj'
+          $newVersion = ${{ steps.incrementVersion.outputs.new_version }}
+          $csprojContent = Get-Content -Path $csprojPath
+          $csprojContent = $csprojContent -replace '<Version>[^<]*</Version>', "<Version>$newVersion</Version>"
+          $csprojContent | Set-Content -Path $csprojPath
+        shell: pwsh
 
+      - name: Commit Version Update
+        run: |
+          git config user.name 'CCSNidhi'
+          git config user.email 'ntailorchambal@gmail.com'
+          git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
+          git push origin main
       - name: Clear Version in csproj file
         run: |
          cd ./MauiApp_version/MauiApp_version
