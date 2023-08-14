@@ -93,10 +93,11 @@ jobs:
 
       - name: Commit Version Update
         run: |
-          git config user.name 'CCSNidhi'
-          git config user.email 'ntailorchambal@gmail.com'
-          git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
-          git push origin main
+         git config user.name 'CCSNidhi'
+         git config user.email 'ntailorchambal@gmail.com'
+         git remote add origin_with_token https://$GITHUB_ACTOR:${{ secrets.GIT_TOKEN }}@github.com/CCSNidhi/demo.git
+         git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
+         git push origin_with_token main
       - name: Clear Version in csproj file
         run: |
          cd ./MauiApp_version/MauiApp_version
