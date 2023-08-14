@@ -109,12 +109,7 @@ jobs:
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-        working-directory: ./MauiApp_version/MauiApp_version
-      - name: Publish MSIX Package
-        run: |
-          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
-          # You might need to adjust the path to your published files
-          msixgen build -p MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
+          working-directory: ./MauiApp_version/MauiApp_version
       
       - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
