@@ -60,25 +60,62 @@ jobs:
       - name: Increment Version
         id: incrementVersion
         run: |
-          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
-          bumpType=${{ env.bump }}
-    
-          if [[ $bumpType == 'patch' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
-          elif [[ $bumpType == 'minor' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
-          elif [[ $bumpType == 'major' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
-          elif [[ $bumpType == 'revision' ]]; then
-            newRevision=$((github.run_number))
-            newVersion="${currentVersion%.*}.$newRevision"
-          else
-            newVersion=$currentVersion
-          fi
-           echo "::set-output name=new_version::$newVersion"
+         currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
+         bumpType=${{ env.bump }}
 
-      - name: Update VERSION File with New Version
-        run: echo "${{ steps.incrementVersion.outputs.new_version }}" > ${{ env.VERSION_FILE_NAME }}
+         if [ "$bumpType" == "patch" ]; then
+           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+         elif [ "$bumpType" == "minor" ]; then
+           newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
+         elif [ "$bumpType" == "major" ]; then
+          newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
+         elif [ "$bumpType" == "revision" ]; then
+          newRevision=$((github.run_number))
+          newVersion="${currentVersion%.*}.$newRevision"
+         else
+          newVersion=$currentVersion
+         fi
+
+          echo "::set-output name=new_version::$newVersion"
+        shell: bash
+        env:
+         VERSION_FILE_NAME: VERSION
+         VERSION_BUMP_FILE: version_fragment
+         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+      - name: Update AssemblyVersion and AssemblyFileVersion
+        run: |
+         bumpType="${{ env.bump }}"
+         currentVersion=$(head -n 1 ${{ env.VERSION_FILE_NAME }})
+
+         IFS='.' read -ra versionParts <<< "$currentVersion"
+         newMajor=${versionParts[0]}
+         newMinor=${versionParts[1]}
+         newPatch=${versionParts[2]}
+         newRevision=${versionParts[3]}
+
+         if [ "$bumpType" == "major" ]; then
+          newMajor=$((newMajor + 1))
+          newMinor=0
+          newPatch=0
+          newRevision=0
+         elif [ "$bumpType" == "minor" ]; then
+          newMinor=$((newMinor + 1))
+          newPatch=0
+          newRevision=0
+         elif [ "$bumpType" == "patch" ]; then
+          newPatch=$((newPatch + 1))
+          newRevision=0
+         elif [ "$bumpType" == "revision" ]; then
+          newRevision=$((newRevision + 1))
+         fi
+
+         newVersion="$newMajor.$newMinor.$newPatch.$newRevision"
+
+         # Find and update AssemblyInfo.cs files
+         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyVersion\(\")([^\"]+)/\1$newVersion/g" {} +
+         find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyFileVersion\(\")([^\"]+)/\1$newVersion/g" {} +
+        shell: bash
       - name: Update Version in csproj
         run: |
          $csprojPath = './MauiApp_version/MauiApp_version/To/MauiApp_version.csproj'  # Specify the actual path to your .csproj file
