@@ -123,9 +123,10 @@ jobs:
           $newVersion = Get-Content -Path VERSION
           $appManifestPath = ""MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest.xml"
           $appManifestContent = Get-Content -Path $appManifestPath
-          $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version='"$newVersion'""
+          $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
           $updatedAppManifestContent | Set-Content -Path $appManifestPath
         shell: pwsh
+       
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
