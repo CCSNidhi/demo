@@ -101,9 +101,9 @@ jobs:
         shell: pwsh
       - name: Update Version in AppxManifest.xml
         run: |
-          newVersion=$(cat VERSION)  # Use the version from your version file
-          appxManifestPath="./MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
-          sed -i -E "s/(Version=\")([^\"]+)/\1$newVersion/g" $appxManifestPath
+         newVersion=$(cat VERSION)  # Use the version from your version file
+         appxManifestPath="./MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
+         sed -i -E "s/(Version=\")([^\"]+)/\1$newVersion\"/g" $appxManifestPath
         shell: bash
       
       - name: Update AssemblyVersion and AssemblyFileVersion
