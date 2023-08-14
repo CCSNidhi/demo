@@ -102,9 +102,7 @@ jobs:
          # Write the updated content back to the csproj file
          $csprojContent | Set-Content -Path $csprojPath
         shell: pwsh
-      - name: Update Project File with New Version
-        run: sed -i "s/<Version>[0-9.]*<\/Version>/<Version>${{ env.new_version }}<\/Version>/" MauiApp_version.csproj
-
+      
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
          bumpType="${{ env.bump }}"
