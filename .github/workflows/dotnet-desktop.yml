@@ -118,7 +118,7 @@ jobs:
         shell: bash
       - name: Update Version in csproj
         run: |
-         $csprojPath = 'demo/MauiApp_version/MauiApp_version/MauiApp_version.csproj'  # Specify the actual path to your .csproj file
+         $csprojPath = 'MauiApp_version/MauiApp_version/MauiApp_version.csproj'  # Specify the actual path to your .csproj file
          $newVersion = ${{ steps.incrementVersion.outputs.new_version }}
 
          # Load the XML content of the csproj file
