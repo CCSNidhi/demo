@@ -99,14 +99,7 @@ jobs:
          # Write the updated content back to the csproj file
          $csprojContent | Set-Content -Path $csprojPath -Force
         shell: pwsh
-      - name: Update Version in AppxManifest.xml
-        run: |
-         $newVersion = Get-Content -Path VERSION
-         $appxManifestPath = "$env:GITHUB_WORKSPACE/MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
-         $appxManifestContent = Get-Content -Path $appxManifestPath
-         $updatedAppxManifestContent = $appxManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
-         $updatedAppxManifestContent | Set-Content -Path $appxManifestPath
-        shell: pwsh
+      
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
          bumpType="${{ env.bump }}"
@@ -139,6 +132,7 @@ jobs:
          find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyVersion\(\")([^\"]+)/\1$newVersion/g" {} +
          find . -name 'AssemblyInfo.cs' -exec sed -i -E "s/(AssemblyFileVersion\(\")([^\"]+)/\1$newVersion/g" {} +
         shell: bash
+        
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
@@ -146,7 +140,14 @@ jobs:
       - name: Fetch New Version
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
-          
+      - name: Update Version in AppxManifest.xml
+        run: |
+         $newVersion = Get-Content -Path VERSION
+         $appxManifestPath = "$env:GITHUB_WORKSPACE/MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
+         $appxManifestContent = Get-Content -Path $appxManifestPath
+         $updatedAppxManifestContent = $appxManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
+         $updatedAppxManifestContent | Set-Content -Path $appxManifestPath
+        shell: pwsh
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
