@@ -41,17 +41,17 @@ jobs:
         run: |
           commitMessage=${{ env.message }}
           if [[ $commitMessage =~ patch ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
+           bumpType="patch"
           elif [[ $commitMessage =~ minor ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
+           bumpType="minor"
           elif [[ $commitMessage =~ major ]]; then
-            echo "bump=major" >> $GITHUB_ENV
+           bumpType="major"
           elif [[ $commitMessage =~ revision ]]; then
-            echo "bump=revision" >> $GITHUB_ENV
+           bumpType="revision"
           else
-            echo "bump=none" >> $GITHUB_ENV
+           bumpType="none"
           fi
-        shell: bash
+          shell: bash
 
       - name: Read Current Version from File
         id: getVersionFromFile
