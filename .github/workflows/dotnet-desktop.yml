@@ -125,7 +125,6 @@ jobs:
           $appManifestContent = Get-Content -Path $appManifestPath
           $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
           $updatedAppManifestContent | Set-Content -Path $appManifestPath
-        shell: pwsh
         
       - name: Build
         run: |
