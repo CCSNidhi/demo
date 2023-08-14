@@ -82,65 +82,27 @@ jobs:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      - name: Update Version in csproj
+      - name: Update Version in Files
         run: |
-          $csprojPath = 'MauiApp_version/MauiApp_version/MauiApp_version.csproj'
-          $newVersion = ${{ steps.incrementVersion.outputs.new_version }}
-          $csprojContent = Get-Content -Path $csprojPath
-          $csprojContent = $csprojContent -replace '<Version>[^<]*</Version>', "<Version>$newVersion</Version>"
-          $csprojContent | Set-Content -Path $csprojPath
-        shell: pwsh
-      - name: Configure Git
-        run: |
-          git config --global user.name 'CCSNidhi'
-          git config --global user.email 'ntailorchambal@gmail.com'
-          git config --global credential.helper store
-      - name: Commit and Push Version Update
-        run: |
-          git commit -am "Auto version bump to ${{ steps.incrementVersion.outputs.new_version }}"
-          git push origin main
-        env:
-          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      - name: Clear Version in csproj file
-        run: |
-         cd ./MauiApp_version/MauiApp_version
-         sed -i "s#<Version>[0-9.]*</Version>#<Version></Version>#" MauiApp_version.csproj
-        shell: bash
-      - name: Update Version in csproj
-        run: |
-         $csprojPath = 'MauiApp_version/MauiApp_version/MauiApp_version.csproj'
-         $newVersion = ${{ steps.incrementVersion.outputs.new_version }}
-         # Load the XML content of the csproj file
-         $csprojContent = Get-Content -Path $csprojPath
-         # Update the Version element using regex
-         $csprojContent = $csprojContent -replace '<Version>[^<]*</Version>', "<Version>$newVersion</Version>"
-         # Write the updated content back to the csproj file
-         $csprojContent | Set-Content -Path $csprojPath -Force
-        shell: pwsh
+          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
+          find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
+          find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
+          echo "$newVersion" > VERSION
       
-      - name: Update Version in AppManifest.xml
+      - name: Build Application
+        run: dotnet build YourApp.sln --configuration Release
+        
+      - name: Publish MSIX Package
         run: |
-         $newVersion = Get-Content -Path VERSION
-         $appManifestPath = "D:\a\demo\demo\MauiApp_version\MauiApp_version\Platforms\Windows\Package.appxmanifest.xml"
-         $appManifestContent = Get-Content -Path $appManifestPath
-         $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
-         $updatedAppManifestContent | Set-Content -Path $appManifestPath
-        shell: pwsh
-       
-      - name: Build
-        run: |
-          dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-        working-directory: ./MauiApp_version/MauiApp_version
-      - name: Fetch New Version
-        id: fetchNewVersion
-        run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
+          dotnet publish YourApp.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
+          # You might need to adjust the path to your published files
+          msixgen build -p YourApp/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
       
-      - name: Upload Build Artifacts
+      - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
         with:
-         name: maui-app-msix-${{ env.NEW_VERSION }}
-         path: ./**/*.msix
-
+          name: msix-artifact
+          path: msix-package.msix
       
 
 
