@@ -32,8 +32,9 @@ jobs:
       - name: Get Last Commit Message
         id: getCommitMessage
         run: |
-         $lastCommitMessage = git log -1 --pretty=format:%B
-         echo "message=$lastCommitMessage" >> $env:GITHUB_ENV
+          lastCommitMessage=$(git log -1 --pretty=format:%B)
+          echo "message=$lastCommitMessage" >> $GITHUB_ENV
+
       - name: Determine Version Bump
         id: determineBump
         run: |
@@ -44,6 +45,8 @@ jobs:
             echo "bump=minor" >> $GITHUB_ENV
           elif [[ $commitMessage =~ major ]]; then
             echo "bump=major" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ revision ]]; then
+            echo "bump=revision" >> $GITHUB_ENV
           else
             echo "bump=none" >> $GITHUB_ENV
           fi
@@ -51,7 +54,7 @@ jobs:
 
       - name: Read Current Version from File
         id: getVersionFromFile
-        run: echo "::set-output name=current_version::$(head -n 1 VERSION)"
+        run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
 
       - name: Increment Version
         id: incrementVersion
@@ -65,6 +68,9 @@ jobs:
             newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
           elif [[ $bumpType == 'major' ]]; then
             newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
+          elif [[ $bumpType == 'revision' ]]; then
+            newRevision=$((github.run_number))
+            newVersion="${currentVersion%.*}.$newRevision"
           else
             newVersion=$currentVersion
           fi
@@ -72,33 +78,33 @@ jobs:
         shell: bash
 
       - name: Update VERSION File with New Version
-        run: echo "${{ steps.incrementVersion.outputs.new_version }}" > VERSION
+        run: echo "${{ steps.incrementVersion.outputs.new_version }}" > ${{ env.VERSION_FILE_NAME }}
+
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
           $bumpType = ${{ env.bump }}
           $currentVersion = Get-Content -Path ${{ env.VERSION_FILE_NAME }} -First 1
+
+          $versionParts = $currentVersion -split '\.'
+          $newMajor = [int]$versionParts[0]
+          $newMinor = [int]$versionParts[1]
+          $newPatch = [int]$versionParts[2]
+          $newRevision = [int]$versionParts[3]
           
-          if ($bumpType -eq 'patch') {
-            $newVersionParts = $currentVersion -split '\.'
-            $newVersionParts[-1] = [int]$newVersionParts[-1] + 1
-            $newVersion = $newVersionParts -join '.'
+          if ($bumpType -eq 'major') {
+            $newMajor += 1
           }
           elseif ($bumpType -eq 'minor') {
-            $newVersionParts = $currentVersion -split '\.'
-            $newVersionParts[1] = [int]$newVersionParts[1] + 1
-            $newVersionParts[-1] = 0
-            $newVersion = $newVersionParts -join '.'
+            $newMinor += 1
           }
-          elseif ($bumpType -eq 'major') {
-            $newVersionParts = $currentVersion -split '\.'
-            $newVersionParts[0] = [int]$newVersionParts[0] + 1
-            $newVersionParts[1] = 0
-            $newVersionParts[-1] = 0
-            $newVersion = $newVersionParts -join '.'
+          elseif ($bumpType -eq 'patch') {
+            $newPatch += 1
           }
-          else {
-            $newVersion = $currentVersion
+          elseif ($bumpType -eq 'revision') {
+            $newRevision += 1
           }
+
+          $newVersion = "$newMajor.$newMinor.$newPatch.$newRevision"
 
           # Find and update AssemblyInfo.cs files
           Get-ChildItem -Path . -Recurse -Filter 'AssemblyInfo.cs' | ForEach-Object {
