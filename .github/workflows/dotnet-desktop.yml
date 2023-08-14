@@ -62,24 +62,26 @@ jobs:
         run: |
           currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
           bumpType=${{ env.bump }}
-          
+    
           if [[ $bumpType == 'patch' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
           elif [[ $bumpType == 'minor' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
+           newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; $3 = 0; print}' OFS=. )
           elif [[ $bumpType == 'major' ]]; then
-            newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
+           newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1; $2 = 0; $3 = 0; print}' OFS=. )
           elif [[ $bumpType == 'revision' ]]; then
-            newRevision=$((github.run_number))
-            newVersion="${currentVersion%.*}.$newRevision"
+           newRevision=$((github.run_number))
+           newVersion="${currentVersion%.*}.$newRevision"
           else
-            newVersion=$currentVersion
+           newVersion=$currentVersion
           fi
-          echo "::set-output name=new_version::$newVersion"
-        shell: bash
+           echo "::set-output name=new_version::$newVersion"
 
       - name: Update VERSION File with New Version
         run: echo "${{ steps.incrementVersion.outputs.new_version }}" > ${{ env.VERSION_FILE_NAME }}
+
+      - name: Update Project File with New Version
+        run: sed -i "s/<Version>[0-9.]*<\/Version>/<Version>${{ env.new_version }}<\/Version>/" MauiApp_version.csproj
 
       - name: Update AssemblyVersion and AssemblyFileVersion
         run: |
