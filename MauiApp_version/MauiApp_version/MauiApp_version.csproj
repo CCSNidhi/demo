@@ -21,12 +21,12 @@
 		<!-- Versions -->
              
                 <Version>$env:new_version</Version>
-                <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+                <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
                 <OutputType>Exe</OutputType>
                 <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
                
 		<ApplicationVersion>1</ApplicationVersion>
-                <NuGetVersion Condition="'$(NuGetVersion)' == ''">$env:new_version</NuGetVersion>
+                
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
