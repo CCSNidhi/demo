@@ -121,7 +121,7 @@ jobs:
       - name: Update Version in AppManifest.xml
         run: |
           $newVersion = Get-Content -Path VERSION
-          $appManifestPath = "$env:GITHUB_WORKSPACE/MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/MauiApp_version_1.0.0.1_Test/AppxManifest.xml"
+          $appManifestPath = ""MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest.xml"
           $appManifestContent = Get-Content -Path $appManifestPath
           $updatedAppManifestContent = $appManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
           $updatedAppManifestContent | Set-Content -Path $appManifestPath
@@ -141,15 +141,7 @@ jobs:
          name: maui-app-msix-${{ env.NEW_VERSION }}
          path: ./**/*.msix
 
-      - name: Update Version in AppxManifest.xml
-        run: |
-         $newVersion = Get-Content -Path VERSION
-         $appxManifestPath = "MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest"
-         $appxManifestContent = Get-Content -Path $appxManifestPath
-         $updatedAppxManifestContent = $appxManifestContent -replace 'Version="[0-9.]+"', "Version=`"$newVersion`""
-         $updatedAppxManifestContent | Set-Content -Path $appxManifestPath
-        shell: pwsh
-
+      
 
 
 
