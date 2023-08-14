@@ -109,7 +109,7 @@ jobs:
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
-          working-directory: ./MauiApp_version/MauiApp_version
+        working-directory: ./MauiApp_version/MauiApp_version
       
       - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
