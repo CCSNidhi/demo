@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+         
  
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
@@ -46,7 +46,7 @@ jobs:
             echo "bump=minor" >> $GITHUB_ENV
           elif [[ $commitMessage =~ major ]]; then
             echo "bump=major" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ major || $commitMessage =~ minor || $commitMessage =~ patch ]]; then
+          elif [[ $commitMessage =~ revision ]]; then
             echo "bump=revision" >> $GITHUB_ENV
           else
             echo "bump=none" >> $GITHUB_ENV
