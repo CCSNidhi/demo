@@ -51,7 +51,7 @@ jobs:
          else
            echo "bump=none" >> $GITHUB_ENV
          fi
-         shell: bash
+         shell: pwsh
 
 
 
