@@ -57,16 +57,11 @@ jobs:
         id: getVersionFromFile
         run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
 
-      - name: Increment Version
-        id: incrementVersion
-        run: |
-         currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
-         bumpType=${{ env.bump }}
          if [ "$bumpType" == "patch" ] || [ "$bumpType" == "minor" ] || [ "$bumpType" == "major" ]; then
-           versionParts=($(echo "$currentVersion" | tr '.' ' '))
-          major=${versionParts[0]}
-          minor=${versionParts[1]}
-          patch=${versionParts[2]}
+          versionParts=($(echo "$currentVersion" | tr '.' ' '))
+          major=$(( ${versionParts[0]} + 1 ))
+          minor=$(( ${versionParts[1]} + 1 ))
+          patch=$(( ${versionParts[2]} + 1 ))
           githubRunNumber=${{ github.run_number }}
           newVersion="$major.$minor.$patch.$githubRunNumber"
          elif [ "$bumpType" == "revision" ]; then
@@ -74,6 +69,7 @@ jobs:
           newVersion="${currentVersion%.*}.$githubRunNumber"
          else
           newVersion=$currentVersion
+
          fi
           echo "::set-output name=new_version::$newVersion"
         shell: bash
