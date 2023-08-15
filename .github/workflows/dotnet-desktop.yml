@@ -39,16 +39,16 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-         commitMessage="${{ env.message }}"
-         if [[ $commitMessage =~ patch ]]; then
-          echo "bump=patch" >> $GITHUB_ENV
-         elif [[ $commitMessage =~ minor ]]; then
-          echo "bump=minor" >> $GITHUB_ENV
-         elif [[ $commitMessage =~ major ]]; then
-          echo "bump=major" >> $GITHUB_ENV
-         else
-          echo "bump=revision" >> $GITHUB_ENV
-         fi
+          commitMessage="${{ env.message }}"
+          if [[ $commitMessage =~ patch ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ minor ]]; then
+           echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ major ]]; then
+           echo "bump=major" >> $GITHUB_ENV
+          else
+           echo "bump=revision" >> $GITHUB_ENV
+          fi
           shell: bash
 
 
