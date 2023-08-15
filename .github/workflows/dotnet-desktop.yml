@@ -70,7 +70,8 @@ jobs:
          else
           newVersion=$currentVersion
          fi
-         newVersionWithRunNumber="${newVersion}+${{ github.run_number }}"
+         newVersionWithRunNumber=$(echo $newVersion | awk -F. '{$4 = ${{ github.run_number }};  print}' OFS=. )
+         
          echo "::set-output name=new_version::$newVersionWithRunNumber"
         shell: bash
         env:
