@@ -20,7 +20,7 @@
 
 		<!-- Versions -->
              
-                <Version>411.1.2.421.426</Version>
+                <Version>1.0.3.421.426.427</Version>
                 <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
                 <OutputType>Exe</OutputType>
                 <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
