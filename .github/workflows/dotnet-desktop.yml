@@ -46,8 +46,7 @@ jobs:
             echo "bump=minor" >> $GITHUB_ENV
           elif [[ $commitMessage =~ major ]]; then
             echo "bump=major" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ revision ]]; then
-            echo "bump=revision" >> $GITHUB_ENV
+          
           else
             echo "bump=none" >> $GITHUB_ENV
           fi
@@ -63,14 +62,11 @@ jobs:
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
          if [ "$bumpType" == "patch" ]; then
-           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1;$1 = 1;$2 = 0; print}' OFS=. )
          elif [ "$bumpType" == "minor" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; print}' OFS=. )
          elif [ "$bumpType" == "major" ]; then
           newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
-         elif [ "$bumpType" == "revision" ]; then
-          newRevision=$((github.run_number))
-          newVersion="${currentVersion%.*}.$newRevision"
          else
           newVersion=$currentVersion
          fi
