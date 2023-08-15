@@ -74,12 +74,12 @@ jobs:
            patch=$((versionParts[2] + 1))
            githubRunNumber="${{ github.run_number }}"
            newVersion="$major.$minor.$patch.$githubRunNumber"
-          else
-           newRevision="${{ github.run_number }}"
-           newVersion="${currentVersion%.*}.$newRevision"
-          fi
-           echo "::set-output name=new_version::$newVersion"
-          shell: bash
+         else
+          newRevision="${{ github.run_number }}"
+          newVersion="${currentVersion%.*}.$newRevision"
+         fi
+         echo "::set-output name=new_version::$newVersion"
+        shell: bash
         env:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
