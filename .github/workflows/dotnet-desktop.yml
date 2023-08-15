@@ -62,7 +62,7 @@ jobs:
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
          if [ "$bumpType" == "patch" ]; then
-           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1;$4 = 0; print}' OFS=. )
+           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
          elif [ "$bumpType" == "minor" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  print}' OFS=. )
          elif [ "$bumpType" == "major" ]; then
@@ -70,7 +70,7 @@ jobs:
          else
           newVersion=$currentVersion
          fi
-         newVersionWithRunNumber="${newVersion}.${{ github.run_number }}"
+         newVersionWithRunNumber="${newVersion}+${{ github.run_number }}"
          echo "::set-output name=new_version::$newVersionWithRunNumber"
         shell: bash
         env:
