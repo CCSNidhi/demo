@@ -61,25 +61,27 @@ jobs:
         shell: bash
         env:
           VERSION_FILE_NAME: VERSION
-
+          
       - name: Increment Version
         id: incrementVersion
         run: |
-         currentVersion="${{ steps.getVersionFromFile.outputs.current_version }}"
+         currentVersion="${{ env.current_version }}"
          bumpType="${{ env.bump }}"
-         if [[ $bumpType == "patch" || $bumpType == "minor" || $bumpType == "major" ]]; then
-           versionParts=($(echo "$currentVersion" | tr '.' ' '))
-           major=$((versionParts[0] + 1))
-           minor=$((versionParts[1] + 1))
-           patch=$((versionParts[2] + 1))
-           githubRunNumber="${{ github.run_number }}"
-           newVersion="$major.$minor.$patch.$githubRunNumber"
-         else
+         if [[ $bumpType == "patch" ]]; then
+           newVersion=$(echo "$currentVersion" | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+         elif [[ $bumpType == "minor" ]]; then
+           ewVersion=$(echo "$currentVersion" | awk -F. '{$2 = $2 + 1; print}' OFS=. )
+         elif [[ $bumpType == "major" ]]; then
+           newVersion=$(echo "$currentVersion" | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
+         elif [[ $bumpType == "revision" ]]; then
           newRevision="${{ github.run_number }}"
           newVersion="${currentVersion%.*}.$newRevision"
+         else
+          newVersion="$currentVersion"
          fi
-         echo "::set-output name=new_version::$newVersion"
-        shell: bash
+          newVersionWithRunNumber="${newVersion}.${{ github.run_number }}"
+          echo "::set-output name=new_version::$newVersionWithRunNumber"
+         shell: bash
         env:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
