@@ -39,18 +39,18 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-          commitMessage="${{ env.message }}"
+          commitMessage=${{ env.message }}
           if [[ $commitMessage =~ patch ]]; then
             echo "bump=patch" >> $GITHUB_ENV
           elif [[ $commitMessage =~ minor ]]; then
-           echo "bump=minor" >> $GITHUB_ENV
+            echo "bump=minor" >> $GITHUB_ENV
           elif [[ $commitMessage =~ major ]]; then
-           echo "bump=major" >> $GITHUB_ENV
+            echo "bump=major" >> $GITHUB_ENV
+          
           else
-           echo "bump=revision" >> $GITHUB_ENV
+            echo "bump=none" >> $GITHUB_ENV
           fi
-          shell: bash
-
+        shell: bash
 
 
       - name: Read Current Version from File
