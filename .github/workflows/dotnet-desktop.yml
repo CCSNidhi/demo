@@ -37,41 +37,49 @@ jobs:
         shell: bash
 
       - name: Determine Version Bump
-        id: determineBump
-        run: |
-          commitMessage=${{ env.message }}
-          if [[ $commitMessage =~ patch ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ minor ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ major ]]; then
-            echo "bump=major" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ revision ]]; then
-            echo "bump=revision" >> $GITHUB_ENV
-          else
-            echo "bump=none" >> $GITHUB_ENV
-          fi
-        shell: bash
+  id: determineBump
+  run: |
+    commitMessage=${{ env.message }}
+    if [[ $commitMessage =~ patch ]]; then
+      echo "bump=patch" >> $GITHUB_ENV
+    elif [[ $commitMessage =~ minor ]]; then
+      echo "bump=minor" >> $GITHUB_ENV
+    elif [[ $commitMessage =~ major ]]; then
+      echo "bump=major" >> $GITHUB_ENV
+    elif [[ $commitMessage =~ major || $commitMessage =~ minor || $commitMessage =~ patch ]]; then
+      echo "bump=revision" >> $GITHUB_ENV
+    else
+      echo "bump=none" >> $GITHUB_ENV
+    fi
+    shell: bash
 
-      - name: Read Current Version from File
-        id: getVersionFromFile
-        run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
 
-         if [ "$bumpType" == "patch" ] || [ "$bumpType" == "minor" ] || [ "$bumpType" == "major" ]; then
-          versionParts=($(echo "$currentVersion" | tr '.' ' '))
-          major=$(( ${versionParts[0]} + 1 ))
-          minor=$(( ${versionParts[1]} + 1 ))
-          patch=$(( ${versionParts[2]} + 1 ))
-          githubRunNumber=${{ github.run_number }}
-          newVersion="$major.$minor.$patch.$githubRunNumber"
-         elif [ "$bumpType" == "revision" ]; then
-          githubRunNumber=${{ github.run_number }}
-          newVersion="${currentVersion%.*}.$githubRunNumber"
-         else
-          newVersion=$currentVersion
 
-         fi
-          echo "::set-output name=new_version::$newVersion"
+    - name: Read Current Version from File
+      id: getVersionFromFile
+      run: |
+       currentVersion=$(head -n 1 $VERSION_FILE_NAME)
+       echo "::set-output name=current_version::$currentVersion"
+
+    - name: Increment Version
+      id: incrementVersion
+      run: |
+       currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
+       bumpType=${{ env.bump }}
+       if [ "$bumpType" == "patch" ] || [ "$bumpType" == "minor" ] || [ "$bumpType" == "major" ]; then
+         versionParts=($(echo "$currentVersion" | tr '.' ' '))
+         major=$(( ${versionParts[0]} + 1 ))
+         minor=$(( ${versionParts[1]} + 1 ))
+         patch=$(( ${versionParts[2]} + 1 ))
+         githubRunNumber=${{ github.run_number }}
+         newVersion="$major.$minor.$patch.$githubRunNumber"
+      elif [ "$bumpType" == "revision" ]; then
+        githubRunNumber=${{ github.run_number }}
+        newVersion="${currentVersion%.*}.$githubRunNumber"
+      else
+        newVersion=$currentVersion
+      fi
+      echo "::set-output name=new_version::$newVersion"
         shell: bash
         env:
          VERSION_FILE_NAME: VERSION
