@@ -104,8 +104,11 @@ jobs:
          git push origin main
         env:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          
       - name: Build Application
-        run: dotnet build MauiApp_version.csproj -c Release
+        run: |
+         dotnet clean
+         dotnet build MauiApp_version/MauiApp_version.csproj -c Release
         working-directory: ./MauiApp_version/MauiApp_version
      
       - name: Build and Generate MSIX Package
