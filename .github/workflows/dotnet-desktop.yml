@@ -65,11 +65,11 @@ jobs:
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
          if [ "$bumpType" == "patch" ]; then
-          newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; $4 = github.run_number; print}' OFS=. )
+          newVersion="${currentVersion%.*}.$((github.run_number))"
          elif [ "$bumpType" == "minor" ]; then
-          newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  $4 = github.run_number; print}' OFS=. )
+          newVersion="${currentVersion%.*}.$((github.run_number))"
          elif [ "$bumpType" == "major" ]; then
-          newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1;  $4 = github.run_number; print}' OFS=. )
+          newVersion="${currentVersion%.*}.$((github.run_number))"
          elif [ "$bumpType" == "revision" ]; then
           newVersion="${currentVersion%.*}.$((github.run_number))"
          else
