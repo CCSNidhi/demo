@@ -46,22 +46,17 @@ jobs:
             echo "bump=minor" >> $GITHUB_ENV
           elif [[ $commitMessage =~ major ]]; then
             echo "bump=major" >> $GITHUB_ENV
-          
+          elif [[ $commitMessage =~ revision ]]; then
+            echo "bump=revision" >> $GITHUB_ENV
           else
             echo "bump=none" >> $GITHUB_ENV
           fi
         shell: bash
 
-
       - name: Read Current Version from File
         id: getVersionFromFile
-        run: |
-          currentVersion=$(head -n 1 $VERSION_FILE_NAME)
-          echo "::set-output name=current_version::$currentVersion"
-        shell: bash
-        env:
-          VERSION_FILE_NAME: VERSION
-          
+        run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
+
       - name: Increment Version
         id: incrementVersion
         run: |
@@ -79,9 +74,9 @@ jobs:
          else
           newVersion=$currentVersion
          fi
-            newVersionWithRunNumber="${newVersion}.${{ github.run_number }}"
-            echo "::set-output name=new_version::$newVersionWithRunNumber"
-          shell: bash
+          newVersionWithRunNumber="${newVersion}.${{ github.run_number }}"
+          echo "::set-output name=new_version::$newVersionWithRunNumber"
+        shell: bash
         env:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
@@ -122,6 +117,7 @@ jobs:
         with:
          name: maui-app-msix-${{ env.NEW_VERSION }}
          path: ./**/*.msix
+
 
       
 
