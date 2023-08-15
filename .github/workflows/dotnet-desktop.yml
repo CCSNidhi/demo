@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-         
+        
  
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
@@ -62,20 +62,19 @@ jobs:
         run: |
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
-
+         currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
+         bumpType=${{ env.bump }}
          if [ "$bumpType" == "patch" ]; then
-           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+          newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; $4 = github.run_number; print}' OFS=. )
          elif [ "$bumpType" == "minor" ]; then
-           newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1; print}' OFS=. )
+          newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  $4 = github.run_number; print}' OFS=. )
          elif [ "$bumpType" == "major" ]; then
-          newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
+          newVersion=$(echo $currentVersion | awk -F. '{$1 = $1 + 1;  $4 = github.run_number; print}' OFS=. )
          elif [ "$bumpType" == "revision" ]; then
-          newRevision=$((github.run_number))
-          newVersion="${currentVersion%.*}.$newRevision"
+          newVersion="${currentVersion%.*}.$((github.run_number))"
          else
           newVersion=$currentVersion
          fi
-
           echo "::set-output name=new_version::$newVersion"
         shell: bash
         env:
