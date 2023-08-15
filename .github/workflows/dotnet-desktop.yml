@@ -105,16 +105,13 @@ jobs:
         env:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
       - name: Build Application
-        run: |
-         cd MauiApp_version/MauiApp_version
-         dotnet build -c Release
+        run: dotnet build MauiApp_version.csproj -c Release
+        working-directory: ./MauiApp_version/MauiApp_version
      
       - name: Build and Generate MSIX Package
         run: |
-          dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
-          # Replace /path/to/msixgen with the actual path to the msixgen executable
-          /path/to/msixgen build -p MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
-
+         dotnet publish MauiApp_version/MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 --no-self-contained
+         C:\Program Files\msixgen\msixgen.exe build -p MauiApp_version/MauiApp_version/bin/Release/net7.0-windows10.0.19041.0/publish -o msix-package.msix
       
       - name: Upload MSIX Artifact
         uses: actions/upload-artifact@v2
