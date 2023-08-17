@@ -52,7 +52,7 @@ jobs:
           fi
         shell: bash
         env:
-         message: ${{ github.event.head_commit.message }}
+         commit_message: ${{ env.commit_message }}
       - name: Read Current Version from File
         id: getVersionFromFile
         run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
