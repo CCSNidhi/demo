@@ -40,11 +40,12 @@ jobs:
         id: determineBump
         run: |
           commitMessage=${{ env.message }}
+          firstWord=$(echo $commitMessage | cut -d' ' -f1)
           if [[ $commitMessage =~ patch ]]; then
             echo "bump=patch" >> $GITHUB_ENV
           elif [[ $commitMessage =~ minor ]]; then
             echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ ^major: ]]; then
+          elif [[ $commitMessage =~ "major:" ]]; then
             echo "bump=major" >> $GITHUB_ENV
           
           else
