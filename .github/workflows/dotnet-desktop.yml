@@ -40,7 +40,7 @@ jobs:
         id: determineBump
         run: |
           commitMessage=${{ env.message }}
-          echo "DEBUG: commitMessage=$commitMessage"
+          echo "DEBUG: commitMessage='$commitMessage'"
           if [[ $commitMessage =~ ^patch: ]]; then
             echo "bump=patch" >> $GITHUB_ENV
           elif [[ $commitMessage =~ ^minor: ]]; then
