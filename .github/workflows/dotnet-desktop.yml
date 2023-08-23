@@ -41,11 +41,11 @@ jobs:
         run: |
           commitMessage=${{ env.message }}
           echo "DEBUG: commitMessage='$commitMessage'"
-          if [[ $commitMessage =~ ^patch: ]]; then
+          if [[ $commitMessage =~ .*patch.* ]]; then
             echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ ^minor: ]]; then
+          elif [[ $commitMessage =~ .*minor.* ]]; then
             echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ ^major: ]]; then
+          elif [[ $commitMessage =~ .*major.* ]]; then
             echo "bump=major" >> $GITHUB_ENV
           
           else
