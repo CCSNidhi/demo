@@ -2,12 +2,12 @@ name: .NET
 
 on:
   push: 
-    branches: 
+    branches:
       - main
-  
-jobs: 
+
+jobs:
   build:
-    runs-on: Windows-latest 
+    runs-on: Windows-latest
     env:
          VERSION_FILE_NAME: 'VERSION'
          VERSION_BUMP_FILE: 'version_fragment'
@@ -39,16 +39,19 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-          case "${{ env.commit_message }}" in
-          Major:*) echo "bump=major" >> $GITHUB_ENV ;;
-          Minor:*) echo "bump=minor" >> $GITHUB_ENV ;;
-          Patch:*) echo "bump=patch" >> $GITHUB_ENV ;;
-          *) echo "bump=none" >> $GITHUB_ENV ;;
-          esac
+          commitMessage=${{ env.message }}
+          if [[ $commitMessage =~ patch ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ minor ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ major ]]; then
+            echo "bump=major" >> $GITHUB_ENV
+          
+          else
+            echo "bump=none" >> $GITHUB_ENV
+          fi
         shell: bash
-        env:
-         commit_message: ${{ env.message }}
-        
+
       - name: Read Current Version from File
         id: getVersionFromFile
         run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
@@ -58,11 +61,11 @@ jobs:
         run: |
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
-         if [ "$bumpType" == "Patch:" ]; then
+         if [ "$bumpType" == "patch" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
-         elif [ "$bumpType" == "Minor:" ]; then
+         elif [ "$bumpType" == "minor" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  print}' OFS=. )
-         elif [ "$bumpType" == "Major:" ]; then
+         elif [ "$bumpType" == "major" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
          else
           newVersion=$currentVersion
