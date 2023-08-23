@@ -39,19 +39,15 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-          commitMessage="${{ env.commit_message }}"
-          echo "DEBUG: commitMessage=$commitMessage"
-          if [[ $commitMessage =~ patch: ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ minor: ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ major: ]]; then
-            echo "bump=major" >> $GITHUB_ENV
-          
-          else
-            echo "bump=none" >> $GITHUB_ENV
-          fi
+          case "${{ env.commit_message }}" in
+          Major:*) echo "bump=major" >> $GITHUB_ENV ;;
+          Minor:*) echo "bump=minor" >> $GITHUB_ENV ;;
+          Patch:*) echo "bump=patch" >> $GITHUB_ENV ;;
+          *) echo "bump=none" >> $GITHUB_ENV ;;
+          esac
         shell: bash
+        env:
+         commit_message: ${{ env.message }}
         
       - name: Read Current Version from File
         id: getVersionFromFile
@@ -66,7 +62,7 @@ jobs:
            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
          elif [ "$bumpType" == "minor" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  print}' OFS=. )
-         elif [ "$bumpType" == "major" ]; then
+         elif [ "$bumpType" == "major:" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
          else
           newVersion=$currentVersion
