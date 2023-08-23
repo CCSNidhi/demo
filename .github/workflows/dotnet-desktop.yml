@@ -56,35 +56,21 @@ jobs:
       - name: Increment Version
         id: incrementVersion
         run: |
-          currentVersion="${{ steps.getVersionFromFile.outputs.current_version }}"
-          bumpType="${{ env.bump }}"
-    
-          IFS='.' read -ra versionComponents <<< "$currentVersion"
-
-           # Determine the component to increment
-          if [ "$bumpType" == "patch" ]; then
-           componentIndex=2
-          elif [ "$bumpType" == "minor" ]; then
-           componentIndex=1
-          elif [ "$bumpType" == "major" ]; then
-           componentIndex=0
-          else
-           componentIndex=-1
-          fi
-
-          # Increment the specified component
-          if [ "$componentIndex" -ge 0 ]; then
-           ((versionComponents[$componentIndex]++))
-          fi
-
-           newVersion="${versionComponents[0]}.${versionComponents[1]}.${versionComponents[2]}"
-
-           newVersionWithRunNumber="$newVersion.${{ github.run_number }}"
-    
-           echo "new_version=$newVersionWithRunNumber" >> $GITHUB_ENV
-          shell: bash
-          env:
-          bump: ${{ env.bump }}
+         currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
+         bumpType=${{ env.bump }}
+         if [ "$bumpType" == "Patch:" ]; then
+           newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
+         elif [ "$bumpType" == "Minor:" ]; then
+           newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  print}' OFS=. )
+         elif [ "$bumpType" == "Major:" ]; then
+           newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
+         else
+          newVersion=$currentVersion
+         fi
+         newVersionWithRunNumber=$(echo $newVersion | awk -F. '{$4 = ${{ github.run_number }};  print}' OFS=. )
+         
+         echo "::set-output name=new_version::$newVersionWithRunNumber"
+        shell: bash
         env:
          VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
