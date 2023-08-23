@@ -44,7 +44,7 @@ jobs:
             echo "bump=patch" >> $GITHUB_ENV
           elif [[ $commitMessage =~ minor ]]; then
             echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ '^Major:' ]]; then
+          elif [[ $commitMessage =~ "Major:" ]]; then
             echo "bump=major" >> $GITHUB_ENV
           
           else
