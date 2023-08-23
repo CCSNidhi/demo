@@ -3,7 +3,7 @@ name: .NET
 on:
   push: 
     branches: 
-      - main 
+      - main
   
 jobs: 
   build:
@@ -40,18 +40,19 @@ jobs:
         id: determineBump
         run: |
           commitMessage=${{ env.message }}
-          if [[ $commitMessage =~ ^Major: ]]; then
-            echo "bump=major" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ ^Minor: ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ ^Patch: ]]; then
+          if [[ $commitMessage =~ patch ]]; then
             echo "bump=patch" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ minor ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ '^Major:' ]]; then
+            echo "bump=major" >> $GITHUB_ENV
+          
           else
             echo "bump=none" >> $GITHUB_ENV
           fi
-          shell: bash
+        shell: bash
         env:
-         message: ${{ github.event.head_commit.message }}
+         commit_message: ${{ env.commit_message }}
       - name: Read Current Version from File
         id: getVersionFromFile
         run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
