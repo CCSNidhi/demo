@@ -58,11 +58,11 @@ jobs:
         run: |
          currentVersion=${{ steps.getVersionFromFile.outputs.current_version }}
          bumpType=${{ env.bump }}
-         if [ "$bumpType" == "patch" ]; then
+         if [ "$bumpType" == "Patch:" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$3 = $3 + 1; print}' OFS=. )
-         elif [ "$bumpType" == "minor" ]; then
+         elif [ "$bumpType" == "Minor:" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{$2 = $2 + 1;  print}' OFS=. )
-         elif [ "$bumpType" == "major:" ]; then
+         elif [ "$bumpType" == "Major:" ]; then
            newVersion=$(echo $currentVersion | awk -F. '{ $1 = $1 + 1; print}' OFS=. )
          else
           newVersion=$currentVersion
