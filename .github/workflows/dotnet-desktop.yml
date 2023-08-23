@@ -40,14 +40,14 @@ jobs:
         id: determineBump
         run: |
           commitMessage=${{ env.message }}
-          if [[ $commitMessage =~ Major:.*patch ]]; then
-           echo "bump=patch" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ Major:.*minor ]]; then
-           echo "bump=minor" >> $GITHUB_ENV
-          elif [[ $commitMessage =~ Major:.*major ]]; then
-           echo "bump=major" >> $GITHUB_ENV
+          if [[ $commitMessage =~ ^Major: ]]; then
+            echo "bump=major" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ ^Minor: ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ ^Patch: ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
           else
-           echo "bump=none" >> $GITHUB_ENV
+            echo "bump=none" >> $GITHUB_ENV
           fi
           shell: bash
         env:
