@@ -126,7 +126,6 @@ jobs:
          name: maui-app-msix-${{ env.NEW_VERSION }}
          path: ./**/*.msix
 
-
       
 
 
