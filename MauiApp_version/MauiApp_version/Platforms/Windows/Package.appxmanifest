@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="5.4.7.477" />
+  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="5.4.8.478" />
 
   <mp:PhoneIdentity PhoneProductId="9CD277F7-CA6D-4253-BAB2-A88F746674BF" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -17,8 +17,8 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="5.4.7.477" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="5.4.7.477" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="5.4.8.478" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="5.4.8.478" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>
