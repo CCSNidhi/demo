@@ -11,7 +11,7 @@
   <mp:PhoneIdentity PhoneProductId="9CD277F7-CA6D-4253-BAB2-A88F746674BF" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>$placeholder$</DisplayName>
+    <DisplayName>clickfree-memory</DisplayName>
     <PublisherDisplayName>User Name</PublisherDisplayName>
     <Logo>$placeholder$.png</Logo>
   </Properties>
@@ -28,7 +28,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="$placeholder$"
+        DisplayName="clickfree-memory"
         Description="$placeholder$"
         Square150x150Logo="$placeholder$.png"
         Square44x44Logo="$placeholder$.png"
