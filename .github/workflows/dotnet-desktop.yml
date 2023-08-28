@@ -112,11 +112,11 @@ jobs:
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
       - name: Rename MSIX Package
-        run: mv bin/Release/OriginalPackageName.msix bin/Release/ClickFree-Memory.msix
+        run: mv MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest/ClickFree-Memory.msix
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
-         name: NewPackageName-${{ env.NEW_VERSION }}  # Use the new name here
+         name: ClickFree-Memory-${{ env.NEW_VERSION }}  # Use the new name here
          path: bin/Release/NewPackageName.msix
       
 
