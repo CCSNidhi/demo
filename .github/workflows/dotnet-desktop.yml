@@ -119,7 +119,12 @@ jobs:
 
       - name: Rename MSIX Package
         run: mv ./**/*.msix ClickFree-Memory.msix
-      
+        
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+         name: clickfree-memory
+         path: ./**/ClickFree-Memory.msix
 
       
 
