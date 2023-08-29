@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
          name: clickfree-memory-${{ env.NEW_VERSION }}
-         path: ./**/*.msix
+         path: ./**/clickfree-memory.msix
       
 
       
