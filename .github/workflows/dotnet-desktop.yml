@@ -103,7 +103,26 @@ jobs:
          git push origin main
         env:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
-          
+      - name: Generate Release Notes
+        id: generate_release_notes
+        run: |
+          currentVersion=${{ steps.get_version.outputs.current_version }}
+          # Implement logic to generate release notes based on version.
+          # Store the release notes in an environment variable, e.g., RELEASE_NOTES.
+          # You can use tools like git log, changelog generators, or custom scripts.
+
+      - name: Update Release Notes in .msixmanifest
+        run: |
+          releaseNotes="${{ env.RELEASE_NOTES }}"
+          # Modify the .msixmanifest file to update the <Description> element
+          # with the generated release notes.
+          # You can use tools like sed or PowerShell to make the update.
+
+      - name: Commit and Push Updated .msixmanifest
+        run: |
+          git add MauiApp_version/MauiApp_version/Platforms/Windows/Package.appxmanifest
+          git commit -m "Update release notes for version ${{ steps.get_version.outputs.current_version }}"
+          git push origin main
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
