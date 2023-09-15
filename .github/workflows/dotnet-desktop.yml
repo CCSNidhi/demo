@@ -106,7 +106,7 @@ jobs:
       - name: Generate Release Notes
         id: generate_release_notes
         run: |
-          currentVersion=1.0.0.
+          currentVersion="1.0.0.0"
           # Implement logic to generate release notes based on version.
           # Store the release notes in an environment variable, e.g., RELEASE_NOTES.
           # You can use tools like git log, changelog generators, or custom scripts.
