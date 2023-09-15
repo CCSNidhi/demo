@@ -8,7 +8,7 @@
 
   <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.490">
 <Description>
-    <![CDATA[
+    
       Release Notes:
 
       Version 1.0.0:
@@ -19,7 +19,7 @@
       Version 1.1.0:
       - Added feature Z.
       - Bug fixes and optimizations.
-    ]]>
+    
   </Description>
 </Identity>
 
