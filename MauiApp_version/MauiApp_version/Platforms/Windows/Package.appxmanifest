@@ -8,18 +8,7 @@
 
   <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.492">
 <Description>
-    
-      Release Notes:
-
-      Version 1.0.0:
-      - Added new feature X.
-      - Fixed issue Y.
-      - Improved performance.
-
-      Version 1.1.0:
-      - Added feature Z.
-      - Bug fixes and optimizations.
-    
+    This app provides details about its updates in a separate release notes document.
   </Description>
 </Identity>
 
