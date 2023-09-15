@@ -114,7 +114,7 @@ jobs:
 
       - name: Update Release Notes in .msixmanifest
         run: |
-          releaseNotes="${{ env.RELEASE_NOTES }}"
+          releaseNotes="Bugs Fix"
           # Modify the .msixmanifest file to update the <Description> element
           # with the generated release notes.
           # You can use tools like sed or PowerShell to make the update.
