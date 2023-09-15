@@ -40,14 +40,7 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-<uap:ShowNameOnTiles>
-  <![CDATA[
-    Release Notes:
 
-    Version 1.0.0:
-    - Fixed a bug.
-  ]]>
-</uap:ShowNameOnTiles>
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
