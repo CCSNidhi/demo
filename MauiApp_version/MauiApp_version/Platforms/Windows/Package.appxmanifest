@@ -6,7 +6,22 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.484" />
+  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.484">
+<Description>
+    <![CDATA[
+      Release Notes:
+
+      Version 1.0.0:
+      - Added new feature X.
+      - Fixed issue Y.
+      - Improved performance.
+
+      Version 1.1.0:
+      - Added feature Z.
+      - Bug fixes and optimizations.
+    ]]>
+  </Description>
+</Identity>
 
   <mp:PhoneIdentity PhoneProductId="9CD277F7-CA6D-4253-BAB2-A88F746674BF" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
