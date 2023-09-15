@@ -16,8 +16,7 @@
     <DisplayName>clickfree-memory</DisplayName>
     <PublisherDisplayName>User Name</PublisherDisplayName>
 <Description>
-  Release notes for version 1.0.0:
-  - Fixed a bug.
+ Fixed-a-bug.
 </Description>
     <Logo>$placeholder$.png</Logo>
   </Properties>
