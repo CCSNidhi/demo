@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.485">
+  <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.486">
 <Description>
     <![CDATA[
       Release Notes:
@@ -32,8 +32,8 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="6.6.11.485" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="6.6.11.485" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="6.6.11.486" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="6.6.11.486" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>
