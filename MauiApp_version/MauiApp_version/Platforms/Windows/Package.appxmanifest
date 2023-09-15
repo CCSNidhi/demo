@@ -7,9 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity Name="clickfree-memory" Publisher="CN=User Name" Version="6.6.11.493">
-<Description>
-    This app provides details about its updates in a separate release notes document.
-  </Description>
+
 </Identity>
 
   <mp:PhoneIdentity PhoneProductId="9CD277F7-CA6D-4253-BAB2-A88F746674BF" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
@@ -33,7 +31,7 @@
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="clickfree-memory"
-        Description="clickfree-memory"
+        Description="Release note:bugg fix "
         Square150x150Logo="$placeholder$.png"
         Square44x44Logo="$placeholder$.png"
         BackgroundColor="transparent">
