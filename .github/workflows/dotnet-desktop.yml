@@ -86,6 +86,7 @@ jobs:
          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
          find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
          find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
+         sed -i "s/AssemblyVersion(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\").*/AssemblyVersion(\"$newVersion\")/" AssemblyInfo.cs
          echo "$newVersion" > VERSION
         shell: bash
         env:
