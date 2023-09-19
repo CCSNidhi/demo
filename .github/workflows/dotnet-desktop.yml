@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: Windows-latest
     env:
-         VERSION_FILE_NAME: 'VERSION'  
+         VERSION_FILE_NAME: 'MauiApp_version/VERSION'  
          VERSION_BUMP_FILE: 'version_fragment'
    
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -78,7 +78,7 @@ jobs:
          echo "::set-output name=new_version::$newVersionWithRunNumber"
         shell: bash
         env:
-         VERSION_FILE_NAME: VERSION
+         VERSION_FILE_NAME: MauiApp_version/VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Update Version in Files
@@ -90,7 +90,7 @@ jobs:
          echo "$newVersion" > VERSION
         shell: bash
         env:
-         VERSION_FILE_NAME: VERSION
+         VERSION_FILE_NAME: MauiApp_version/VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Configure Git
