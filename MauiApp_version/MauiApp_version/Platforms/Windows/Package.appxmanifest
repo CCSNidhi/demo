@@ -30,7 +30,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="clickfree-memory"
+        DisplayName="clickfr"
         Description="bugs-fix"
         Square150x150Logo="$placeholder$.png"
         Square44x44Logo="$placeholder$.png"
