@@ -87,7 +87,7 @@ jobs:
          find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
          find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
          find . -name 'AssemblyInfo.cs' -exec sed -i "s/AssemblyVersion(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\").*/AssemblyVersion(\"$newVersion\")/" {} +
-         echo "$newVersion" > VERSION
+         echo "$newVersion" > MauiApp_version/VERSION
         shell: bash
         env:
          VERSION_FILE_NAME: MauiApp_version/MauiApp_version/VERSION
