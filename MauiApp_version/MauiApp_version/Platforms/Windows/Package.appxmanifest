@@ -15,9 +15,6 @@
   <Properties>
     <DisplayName>clickfree-memory</DisplayName>
     <PublisherDisplayName>User Name</PublisherDisplayName>
-<Description>
- Fixed-a-bug
-</Description>
     <Logo>$placeholder$.png</Logo>
   </Properties>
 
