@@ -119,7 +119,15 @@ jobs:
         with:
          name: clickfree-memory-${{ env.NEW_VERSION }}
          path: ./**/*.msix
-
+         
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GIT_TOKEN }}"
+          prerelease: false
+          files: |
+            LICENSE.txt
+            *.jar
+      - uses: "marvinpinto/action-automatic-releases@<NEW_VERSION>"
       - name: Rename MSIX Package
         run: mv ./**/*.msix ClickFree-Memory.msix
         
