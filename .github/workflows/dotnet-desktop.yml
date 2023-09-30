@@ -127,7 +127,7 @@ jobs:
           files: |
             LICENSE.txt
             *.jar
-      - uses: "marvinpinto/action-automatic-releases@${{ env.NEW_VERSION }}"
+    
       - name: Rename MSIX Package
         run: mv ./**/*.msix ClickFree-Memory.msix
         
