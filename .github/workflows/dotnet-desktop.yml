@@ -123,13 +123,11 @@ jobs:
         shell: bash
 
       - name: Check Workflow Trigger
-        id: checkTrigger
         run: |
-         if [[ "$( steps.workflowTrigger.outputs.event_type )" == "push" ]]; then
-          echo "This workflow was triggered by a push event."
-         elif [ "$( steps.workflowTrigger.outputs.event_type )" == "push" ]; then
+         if [ "${{ steps.workflowTrigger.outputs.event_type }}" == "push" ]; then
+           echo "This workflow was triggered by a push event."
+         elif [ "${{ steps.workflowTrigger.outputs.event_type }}" == "tag" ]; then
           echo "This workflow was triggered by a tag event."
-     
          else
           echo "Unknown event type."
          fi
