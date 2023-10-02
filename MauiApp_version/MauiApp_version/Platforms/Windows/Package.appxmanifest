@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="clickfree" Publisher="CN=User Name" Version="1.0.0.519">
+  <Identity Name="clickfree" Publisher="CN=User Name" Version="1.0.0.520">
 
 </Identity>
 
@@ -19,8 +19,8 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="1.0.0.519" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="1.0.0.519" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="1.0.0.520" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="1.0.0.520" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>
