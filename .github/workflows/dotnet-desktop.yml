@@ -9,6 +9,7 @@ on:
 
 jobs: 
   build:
+    name: "Tagged Release"
     runs-on: Windows-latest
     env:
          VERSION_FILE_NAME: 'MauiApp_version/VERSION'  
