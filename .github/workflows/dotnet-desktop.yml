@@ -129,10 +129,10 @@ jobs:
       - name: Check Workflow Trigger
         id: checkTrigger
         run: |
-         if [[ "push" == "push" ]]; then
+         if [ "push" == "push" ]; then
           echo "This workflow was triggered by a push event."
 
-         elif [[ "push" == "push" ]]; then
+         elif [ "push" == "push" ]; then
           echo "This workflow was triggered by a tag event."
      
          else
