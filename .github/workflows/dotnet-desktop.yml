@@ -2,17 +2,14 @@ name: .NET
 
 on:
   push: 
-    branches:
+    branches: 
       - main
-    tags:
-      - '*'
-
+  
 jobs: 
   build:
-    name: "Tagged Release"
-    runs-on: Windows-latest
-    env: 
-         VERSION_FILE_NAME: 'MauiApp_version/VERSION'  
+    runs-on: Windows-latest 
+    env:
+         VERSION_FILE_NAME: 'VERSION'
          VERSION_BUMP_FILE: 'version_fragment'
    
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -42,22 +39,20 @@ jobs:
       - name: Determine Version Bump
         id: determineBump
         run: |
-         commitMessage="${{ env.message }}"
-         echo "DEBUG: commitMessage='$commitMessage'"
-    
-         if [[ $commitMessage =~ .*patch.* ]]; then
-          echo "bump=patch" >> $GITHUB_ENV
-         elif [[ $commitMessage =~ .*minor.* ]]; then
-          echo "bump=minor" >> $GITHUB_ENV
-         elif [[ $commitMessage =~ .*major.* ]]; then
-          echo "bump=major" >> $GITHUB_ENV
-         else
-          echo "bump=none" >> $GITHUB_ENV
-         fi
+          commitMessage=${{ env.message }}
+          if [[ $commitMessage =~ patch ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ minor ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ $commitMessage =~ *"Major:"* ]]; then
+            echo "bump=major" >> $GITHUB_ENV
+          
+          else
+            echo "bump=none" >> $GITHUB_ENV
+          fi
         shell: bash
-
-
-
+        env:
+         commit_message: ${{ env.commit_message }}
       - name: Read Current Version from File
         id: getVersionFromFile
         run: echo "::set-output name=current_version::$(head -n 1 ${{ env.VERSION_FILE_NAME }})"
@@ -81,7 +76,7 @@ jobs:
          echo "::set-output name=new_version::$newVersionWithRunNumber"
         shell: bash
         env:
-         VERSION_FILE_NAME: MauiApp_version/VERSION
+         VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Update Version in Files
@@ -89,11 +84,10 @@ jobs:
          newVersion="${{ steps.incrementVersion.outputs.new_version }}"
          find . -name '*.csproj' -exec sed -i "s#<Version>[^<]*</Version>#<Version>$newVersion</Version>#" {} +
          find . -name 'Package.appxmanifest' -exec sed -i "s#Version=\"[0-9.]*\"#Version=\"$newVersion\"#" {} +
-         find . -name 'AssemblyInfo.cs' -exec sed -i "s/AssemblyVersion(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\").*/AssemblyVersion(\"$newVersion\")/" {} +
-         echo "$newVersion" > MauiApp_version/VERSION
+         echo "$newVersion" > VERSION
         shell: bash
         env:
-         VERSION_FILE_NAME: MauiApp_version/MauiApp_version/VERSION
+         VERSION_FILE_NAME: VERSION
          VERSION_BUMP_FILE: version_fragment
          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - name: Configure Git
@@ -107,9 +101,7 @@ jobs:
          git push origin main
         env:
          PAT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      
-
-    
+          
       - name: Build
         run: |
           dotnet publish MauiApp_version.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p
@@ -117,29 +109,12 @@ jobs:
       - name: Fetch New Version
         id: fetchNewVersion
         run: echo "new_version=$(cat VERSION)" >> $GITHUB_EN
-      
-      - name: Determine Workflow Trigger
-        id: workflowTrigger
-        run: echo "::set-output name=event_type::${{ github.event_name }}"
-        shell: bash
-
-      
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GIT_TOKEN }}"
-          prerelease: false
-          files: |
-            LICENSE.txt
-            *.jar
-    
-      - name: Rename MSIX Package
-        run: mv ./**/*.msix ClickFree-Memory.msix
-        
+          
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
-         name: clickfree-memory
-         path: ./**/ClickFree-Memory.msix
+         name: maui-app-msix-${{ env.NEW_VERSION }}
+         path: ./**/*.msix
 
       
 
