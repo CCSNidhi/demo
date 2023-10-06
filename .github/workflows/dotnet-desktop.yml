@@ -8,7 +8,7 @@ on:
 jobs: 
   build:
     runs-on: Windows-latest  
-    env:
+    env: 
          VERSION_FILE_NAME: 'VERSION'
          VERSION_BUMP_FILE: 'version_fragment'
     
