@@ -23,7 +23,6 @@
                 <Version>1.2.1.532</Version>
                 <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
                 <OutputType>Exe</OutputType>
-                <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
                
 		<ApplicationVersion>1</ApplicationVersion>
                 
